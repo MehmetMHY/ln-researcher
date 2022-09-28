@@ -1,0 +1,22 @@
+{
+  "name": "near-label-data-hosting",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MehmetMHY/near-label-data-hosting.git"
+  },
+  "author": "Mehmet Yilmaz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MehmetMHY/near-label-data-hosting/issues"
+  },
+  "homepage": "https://github.com/MehmetMHY/near-label-data-hosting#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
