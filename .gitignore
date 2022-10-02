@@ -106,4 +106,6 @@ dist
 # MacOS
 .DS_Store
 
+# Project based
+data/*
 
