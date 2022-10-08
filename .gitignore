@@ -108,4 +108,6 @@ dist
 
 # Project based
 data/*
+sandbox/
+
 
