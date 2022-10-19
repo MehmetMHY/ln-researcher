@@ -109,5 +109,5 @@ dist
 # Project based
 data/*
 sandbox/
-
+assets/data/*
 
