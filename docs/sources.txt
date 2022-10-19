@@ -1,0 +1,13 @@
+https://expressjs.com/en/starter/hello-world.html
+https://www.sohamkamani.com/nodejs/rsa-encryption/
+https://gist.github.com/prof3ssorSt3v3/96e6b29cd5baf4aeaad29a93fd3c7ed5
+https://bloop.ai/search/how-to-use-crypto-js-library-rabbit-decrypt-in-javascript
+https://www.geeksforgeeks.org/node-js-crypto-generatekeypairsync-method/
+https://www.sohamkamani.com/nodejs/rsa-encryption/
+https://codeforgeek.com/handle-get-post-request-express-4/
+https://gist.github.com/prof3ssorSt3v3/96e6b29cd5baf4aeaad29a93fd3c7ed5
+https://bloop.ai/search/how-to-use-crypto-js-library-rabbit-decrypt-in-javascript
+https://www.geeksforgeeks.org/node-js-crypto-generatekeypairsync-method/
+https://www.sohamkamani.com/nodejs/rsa-encryption/
+https://www.youtube.com/watch?v=pKd0Rpw7O48
+
