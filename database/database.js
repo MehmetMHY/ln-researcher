@@ -1,7 +1,9 @@
 const { Pool, Client } = require('pg')
 const { v4: uuidv4 } = require('uuid');
 
-const pool = new Pool()
+const config = require("../config/config.json")
+
+const pool = new Pool(config.postgres.connection)
 
 async function isObject(value){
     if ( typeof(value) !== 'object' || Array.isArray(value) || value === null) {
@@ -108,3 +110,4 @@ module.exports = {
     add,
     remove
 }
+
