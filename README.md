@@ -1,6 +1,6 @@
 <h1 align="center">Labeler NearBy - Researcher</h1>
 <p align="center">
-  <img width="200" src="./assets/ln-logo.png">
+  <img width="200" src="./assets/repoImgs/ln-logo.png">
 </p>
 
 ## Goal:
