@@ -5,14 +5,14 @@ const pino = require('pino')
 module.exports = pino(
     {
         customLevels: {
-            debug: 20,
-            info: 30,
-            warn: 40,
-            error: 50,
-            fatal: 60
+            debug: 10,
+            info: 20,
+            warn: 30,
+            error: 40,
+            fatal: 50
         },
         useOnlyCustomLevels: true,
-        level: 'info'
+        level: 'debug'
     },
     pino.destination(config.logfile)
 )
