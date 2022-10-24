@@ -22,4 +22,9 @@ https://dataschool.com/learn-sql/export-to-csv-from-psql/
 https://gist.github.com/kcranston/b309664dc8864e680813f0f2b87c3b5b
 https://medium.com/codex/intro-to-postgresql-c8da31335c34
 https://www.youtube.com/watch?v=qw--VYLpxG4
+https://css-tricks.com/how-to-implement-logging-in-a-node-js-application-with-pino-logger/
+https://github.com/pinojs/pino-pretty
+https://www.npmjs.com/package/pino-http#example
+https://www.npmjs.com/package/pino
+https://levelup.gitconnected.com/7-best-node-js-logging-libraries-for-your-next-projects-2ae9da133931
 
