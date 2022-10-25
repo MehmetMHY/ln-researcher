@@ -27,4 +27,7 @@ https://github.com/pinojs/pino-pretty
 https://www.npmjs.com/package/pino-http#example
 https://www.npmjs.com/package/pino
 https://levelup.gitconnected.com/7-best-node-js-logging-libraries-for-your-next-projects-2ae9da133931
+https://stackoverflow.com/questions/44133426/ajv-schema-validation-for-array-of-objects
+https://ajv.js.org/guide/why-ajv.html
+https://www.npmjs.com/package/ajv
 
