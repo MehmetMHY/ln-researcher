@@ -8,5 +8,8 @@
             "database": "data",
             "port": 5432
         }
-    }
+    },
+    "pausedTestFiles": [
+        "logger.test.js"
+    ]
 }
