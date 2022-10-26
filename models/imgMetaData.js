@@ -4,7 +4,7 @@ const imgData = {
         raw: { type: "object" },
         label: { type: "object" }
     },
-    required: ["raw", "label"],
+    required: ["label"],
     additionalProperties: false
 }
 
@@ -12,9 +12,10 @@ const timeData = {
     type: "object",
     properties: {
         uploaded: { type: "number" },
-        completed: { type: "number" }
+        completed: { type: "number" },
+        units: { enum: ["ms", "s"] }
     },
-    required: ["uploaded", "completed"],
+    required: ["uploaded", "completed", "units"],
     additionalProperties: false
 }
 

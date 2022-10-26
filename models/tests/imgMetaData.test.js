@@ -19,7 +19,8 @@ test(`Test if object that is a valid imgMetaData scheme passes ajv validation`, 
     value: 2.1,
     timeLogs: {
       uploaded: 1666618833000,
-      completed: 1666618833000
+      completed: 1666618873000,
+      units: "ms"
     },
     labelers: [
       {
