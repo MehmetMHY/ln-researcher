@@ -1,7 +1,7 @@
 const { Pool, Client } = require('pg')
 const { v4: uuidv4 } = require('uuid');
 
-const config = require("../config/config.json")
+const config = require("../../config/config.json")
 
 const pool = new Pool(config.postgres.connection)
 
