@@ -3,13 +3,8 @@ const { v4: uuidv4 } = require('uuid');
 
 const config = require("../../config/config.json")
 
-const pool = new Pool(config.postgres.connection)
-
-async function isObject(value){
-    if ( typeof(value) !== 'object' || Array.isArray(value) || value === null) {
-        return false
-    }
-    return true
+async function validTargetType(value){
+    return !(typeof(value) !== 'object' || Array.isArray(value) || value === null)
 }
 
 async function jsonToAndStaement(targets){
@@ -29,13 +24,14 @@ async function jsonToAndStaement(targets){
 async function add(data){
     const output = { "status": 0, "errors": [], "result": [] }
     
-    if ( !isObject(data) || Object.keys(data).length === 0 ) {
+    if ( !validTargetType(data) || Object.keys(data).length === 0 ) {
         output["status"] = -1
         output["errors"].push(`Inputed data is NOT a valid object/json: ${JSON.stringify(data)}`)
         return output
     }
     
     try {
+        const pool = new Pool(config.postgres.connection)
         data["id"] = String(uuidv4())
         const result = await pool.query(
             "INSERT INTO images(data) VALUES($1)",
@@ -57,7 +53,7 @@ async function get(targets=undefined){
     let sqlCmd = "SELECT * FROM images"
 
     if ( targets !== undefined ) {
-        if ( !isObject(targets) || Object.keys(targets).length === 0 ) {
+        if ( !validTargetType(targets) || Object.keys(targets).length === 0 ) {
             output["status"] = -1
             output["errors"].push(`Inputed data is NOT a valid object/json: ${JSON.stringify(targets)}`)
             return output
@@ -68,6 +64,7 @@ async function get(targets=undefined){
     }
 
     try {
+        const pool = new Pool(config.postgres.connection)
         const data = await pool.query(sqlCmd)
         await pool.end()
         data["rows"].forEach(function (value, index) {
@@ -84,7 +81,7 @@ async function get(targets=undefined){
 async function remove(targets=undefined){
     const output = { "status": 0, "errors": [], "result": [] }
     
-    if ( !isObject(targets) || Object.keys(targets).length === 0 ) {
+    if ( !validTargetType(targets) || Object.keys(targets).length === 0 ) {
         output["status"] = -1
         output["errors"].push(`Inputed data is NOT a valid object/json: ${JSON.stringify(targets)}`)
         return output
@@ -94,6 +91,7 @@ async function remove(targets=undefined){
     const sqlCmd = `DELETE FROM images WHERE ${reTargets}`
 
     try {
+        const pool = new Pool(config.postgres.connection)
         const result = await pool.query(sqlCmd)
         await pool.end()
         output["result"] = result
@@ -108,6 +106,6 @@ async function remove(targets=undefined){
 module.exports = {
     get,
     add,
-    remove
+    remove,
+    validTargetType
 }
-
