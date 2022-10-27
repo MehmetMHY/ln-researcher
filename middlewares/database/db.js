@@ -97,9 +97,49 @@ async function getImageData(details=undefined){
     return undefined
 }
 
+async function editImageData(filepath, keyValue, targets){
+    filepath = String(filepath)
+
+    if (fs.existsSync(String(filepath))) {
+
+        const validKeyValue = await postgusDB.validTargetType(keyValue)
+        const validTarget = await postgusDB.validTargetType(targets)
+        if (Object.keys(keyValue).length === 1 && validKeyValue && validTarget) {
+            
+            const fileDbList = await postgusDB.get( { filepath: filepath } ) 
+            if (fileDbList.result && fileDbList.result.length > 0) {
+                
+                let key, value
+                for(let k in keyValue){
+                    key = k
+                    value = keyValue[k]
+                    break
+                }
+
+                const dbOutput = await postgusDB.edit(key, value, targets)
+                if(dbOutput.status === 0){
+                    logger.info(`Successfully edited db entry for file ${filepath} with keyValue = ${JSON.stringify(keyValue)} and targets = ${JSON.stringify(targets)}. Response: ${JSON.stringify(dbOutput)}`)
+                    return true
+                }
+
+                logger.info(`Failed to edit db entry for file ${filepath}. Response: ${JSON.stringify(dbOutput)}`)
+                return false  
+            }
+
+            logger.error(`Failed to edit image db entry for ${filepath} because the entry does not exist in the db`)
+        }
+
+        logger.error(`Failed to edit image db entry for ${filepath} because params keyValue and/or targets are formated incorrectly`)
+        return false
+    }
+
+    logger.error(`Failed to edit image db entry for ${filepath} because the image does not exist`)
+    return false
+}
+
 module.exports = {
     addImageData,
     deleteImageData,
-    getImageData
+    getImageData,
+    editImageData
 }
-
