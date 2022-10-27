@@ -103,9 +103,38 @@ async function remove(targets=undefined){
     return output
 }
 
+async function edit(key, newValue, targets){
+    const output = { "status": 0, "errors": [], "result": [] }
+    
+    if ( !validTargetType(targets) || Object.keys(targets).length === 0 ) {
+        output["status"] = -1
+        output["errors"].push(`Inputed data is NOT a valid object/json: ${JSON.stringify(targets)}`)
+        return output
+    }
+
+    const strKey = String(key)
+    const strNewValue = String(newValue)
+    const reTargets = await jsonToAndStaement(targets)
+
+    const sqlCmd = `UPDATE images SET data = JSONB_SET(data, '{${strKey}}', '"${strNewValue}"') WHERE ${reTargets}`
+
+    try {
+        const pool = new Pool(config.postgres.connection)
+        const result = await pool.query(sqlCmd)
+        await pool.end()
+        output["result"] = result
+    } catch(e) {
+        output["status"] = -1
+        output["errors"].push(`${e}`)
+    }
+
+    return output
+}
+
 module.exports = {
     get,
     add,
+    edit,
     remove,
     validTargetType
 }

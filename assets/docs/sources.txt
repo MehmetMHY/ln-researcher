@@ -30,4 +30,6 @@ https://levelup.gitconnected.com/7-best-node-js-logging-libraries-for-your-next-
 https://stackoverflow.com/questions/44133426/ajv-schema-validation-for-array-of-objects
 https://ajv.js.org/guide/why-ajv.html
 https://www.npmjs.com/package/ajv
+https://dev.to/deepika_banoth/how-to-use-jsonbset-function-in-postgresql-35eo
+https://devhints.io/postgresql-json
 
