@@ -4,7 +4,7 @@ const config = require("../../config/config.json")
 
 const ajv = new Ajv()
 
-test(`Test if object that is a valid imgMetaData scheme passes ajv validation`, () => {
+test(`Test if object that if a valid imgMetaData scheme passes ajv validation`, () => {
   const imgMetaData = require("../imgMetaData")
 
   const schema = imgMetaData.imgMetaData
@@ -14,7 +14,11 @@ test(`Test if object that is a valid imgMetaData scheme passes ajv validation`, 
     status: "pending",
     image: {
       raw: {},
-      label: {}
+      label: {},
+      resolution: {
+          height: 1080,
+          width: 1920
+      }
     },
     value: 2.1,
     timeLogs: {

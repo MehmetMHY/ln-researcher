@@ -1,10 +1,21 @@
+const resolutionData = {
+    type: "object",
+    properties: {
+        height: { type: "number" },
+        width: { type: "number" }
+    },
+    required: ["height", "width"],
+    additionalProperties: false
+}
+
 const imgData = {
     type: "object",
     properties: {
         raw: { type: "object" },
-        label: { type: "object" }
+        label: { type: "object" },
+        resolution: resolutionData
     },
-    required: ["label"],
+    required: ["label", "resolution"],
     additionalProperties: false
 }
 
