@@ -1,5 +1,6 @@
 {
     "logfile": "/tmp/ln_researcher.log",
+    "dataDirPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/",
     "postgres": {
         "connection": {
             "user": "postgres",
