@@ -76,6 +76,35 @@ class JobPosting {
   }
 
   /**
+   * cancel one or more jobs by providing a list of job ids
+   * @param  {number[]} ids list of ids of jobs to cancel
+   * @return {string}       result message (success or error)
+   */
+  @call({})
+  cancel_jobs({ ids }: { ids: string[] }): string {
+    const canceled_jobs = [];
+    const errors = [];
+    ids.map((id) => {
+      // only jobs in the available jobs list can be canceled
+      const job = this.available_jobs.find((job) => job.id === id);
+      if (job) {
+        this.available_jobs = this.available_jobs.filter((job) => job.id != id);
+        canceled_jobs.push(job.id);
+      } else {
+        errors.push(job.id);
+      }
+    });
+    if (!errors.length)
+      return `success: canceled ${
+        canceled_jobs.length > 1 ? "jobs" : "job"
+      } ${canceled_jobs}`;
+    // note: all matching jobs present in the available jobs list will be canceled, even if some jobs cannot be canceled
+    return `error: ${
+      errors.length > 1 ? "jobs" : "job"
+    } ${errors} already assigned or do not exist`;
+  }
+
+  /**
    * Gets all of the jobs currently available
    * @returns {Job[]} list of Job objects
    */
