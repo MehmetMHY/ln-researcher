@@ -2,10 +2,10 @@ import { NearBindgen, near, call, view } from "near-sdk-js";
 
 interface Job {
   id: string;
-  reward?: string;
-  labels?: Label[];
-  reviews?: Review[];
-  expires?: string;
+  reward: string;
+  expires: string;
+  labels: Label[];
+  reviews: Review[];
 }
 
 interface Label {
@@ -23,6 +23,8 @@ const SECONDS_PER_MONTH: bigint = BigInt(2592000); // (30 days)
 // placeholder configuration
 const STORAGE_LIMIT: bigint = BigInt(1000000000000000000000000); // 1 NEAR
 const MIN_REWARD: bigint = BigInt(1000000000000000000000000); // 1 NEAR
+const NUM_LABELS = 3;
+const NUM_REVIEWS = 3;
 
 @NearBindgen({})
 class JobPosting {
@@ -71,6 +73,8 @@ class JobPosting {
         id: id,
         reward: `${reward_amount}`,
         expires: `${expires}`,
+        labels: [],
+        reviews: [],
       });
     });
 
@@ -145,5 +149,39 @@ class JobPosting {
   @view({})
   get_completed_jobs(): Job[] {
     return this.completed_jobs;
+  }
+
+  /**
+   * Request a job
+   * @returns {Job | string} assigned job or error message
+   */
+  @call({})
+  request_job(): Job | string {
+    if (this.available_jobs.length === 0) {
+      return "error: no available jobs";
+    }
+
+    const requester_id = near.predecessorAccountId();
+    const assigned_job = this.in_progress_jobs.find((job) => {
+      const label = job.labels.find((label) => label.labeler === requester_id);
+      const review = job.reviews.find(
+        (review) => review.reviewer === requester_id
+      );
+
+      return label || review;
+    });
+    if (assigned_job) {
+      return "error: user currently assigned an unsubmitted job";
+    }
+
+    let job = this.available_jobs.pop();
+    if (job.labels.length < NUM_LABELS) {
+      job.labels.push({ labeler: requester_id, data: {} });
+    } else if (job.reviews.length < NUM_REVIEWS) {
+      job.reviews.push({ reviewer: requester_id, ranking: {} });
+    }
+
+    this.in_progress_jobs.push(job);
+    return job;
   }
 }
