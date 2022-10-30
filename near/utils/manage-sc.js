@@ -191,13 +191,12 @@ const deploy_smart_contract = async (account) => {
 
   // deploy smart contract if necessary
   if (!sc_deployed) {
-    console.log("deploying smart contract to sub account");
+    console.log("deploying smart contract");
     // build smart contract
     execSync("cd ../contract && npm run build");
-    const response = await sub_account.deployContract(
+    const response = await account.deployContract(
       fs.readFileSync("../contract/build/job_posting.wasm")
     );
-    console.log(response);
   } else {
     console.log("smart contract already deployed");
   }
@@ -218,13 +217,30 @@ const main = async () => {
 
   // set up near connection and authenticate user
   const near_connection = await connect_to_near();
+  let caller_account;
   let contract_account;
   if (account_id) {
     contract_account = await configure_sub_account(account_id, near_connection);
+    caller_account = await near_connection.account(account_id);
   } else {
     contract_account = await configure_dev_account(near_connection);
+    caller_account = contract_account;
   }
   await deploy_smart_contract(contract_account);
+
+  let response;
+  response = await caller_account.functionCall({
+    contractId: contract_account.accountId,
+    methodName: "set_greeting",
+    args: { message: "test msg" },
+  });
+
+  response = await caller_account.viewFunction({
+    contractId: contract_account.accountId,
+    methodName: "get_greeting",
+    args: {},
+  });
+  console.log(response);
 };
 
 await main();
