@@ -28,6 +28,8 @@ const MIN_REWARD: bigint = BigInt(1000000000000000000000000); // 1 NEAR
 class JobPosting {
   funds: string = "0";
   available_jobs: Job[] = [];
+  in_progress_jobs: Job[] = [];
+  completed_jobs: Job[] = [];
 
   /**
    * Send the specified amount of near tokens to the specified account
@@ -105,11 +107,43 @@ class JobPosting {
   }
 
   /**
-   * Gets all of the jobs currently available
+   * get Job objects by providing list of job ids
+   * @param  {number[]} ids list of job ids, returns all jobs if empty
+   * @return {job[]}        list of job objects with matching ids
+   */
+  @view({})
+  get_jobs({ ids }: { ids: string[] }): Job[] {
+    const all_jobs = this.available_jobs
+      .concat(this.in_progress_jobs)
+      .concat(this.completed_jobs);
+    if (!ids) return all_jobs;
+    return all_jobs.filter((job) => ids.includes(job.id));
+  }
+
+  /**
+   * Gets all jobs currently in the available jobs list
    * @returns {Job[]} list of Job objects
    */
   @view({})
   get_available_jobs(): Job[] {
     return this.available_jobs;
+  }
+
+  /**
+   * get all jobs currently in the in progress jobs list
+   * @returns {Job[]} list of job objects
+   */
+  @view({})
+  get_in_progress_jobs(): Job[] {
+    return this.in_progress_jobs;
+  }
+
+  /**
+   * get all jobs currently in the completed jobs list
+   * @returns {Job[]} list of job objects
+   */
+  @view({})
+  get_completed_jobs(): Job[] {
+    return this.completed_jobs;
   }
 }
