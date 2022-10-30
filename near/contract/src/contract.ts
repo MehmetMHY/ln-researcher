@@ -4,8 +4,9 @@ interface Job {
   id: string;
   reward: string;
   expires: string;
-  labels: Label[];
-  reviews: Review[];
+  labels?: Label[];
+  reviews?: Review[];
+  ranking?: string[];
 }
 
 interface Label {
@@ -183,5 +184,104 @@ class JobPosting {
 
     this.in_progress_jobs.push(job);
     return job;
+  }
+
+  @call({})
+  submit_job({ job }: { job: Job }): void {
+    if (job.labels.length < NUM_LABELS || job.reviews.length < NUM_REVIEWS) {
+      this.available_jobs.push(job);
+    } else {
+      const ranking = this.rank_reviews(job);
+      near.log(ranking);
+      job.ranking = ranking;
+      this.completed_jobs.push(job);
+    }
+
+    this.in_progress_jobs = this.in_progress_jobs.filter((ipj) => {
+      return ipj.id != job.id;
+    });
+  }
+
+  rank_reviews(job: Job): string[] {
+    // group votes by ranking
+    const votes: Map<string[], number> = job.reviews.reduce((acc, review) => {
+      if (acc.has(review.ranking)) {
+        acc.set(review.ranking, acc.get(review.ranking) + 1);
+      } else {
+        acc.set(review.ranking, 1);
+      }
+      return acc;
+    }, new Map());
+
+    // compute pairwise candidate preferences
+    let preferences = {};
+    for (let entry of votes) {
+      const ranking = entry[0];
+      const votes = entry[1];
+
+      for (let i = 0; i < ranking.length - 1; i++) {
+        for (let j = i + 1; j < ranking.length; j++) {
+          let v = ranking[i];
+          let w = ranking[j];
+
+          if (!preferences[v]) {
+            preferences[v] = {};
+          }
+
+          preferences[v][w] = preferences[v][w]
+            ? preferences[v][w] + votes
+            : votes;
+        }
+      }
+    }
+
+    // generate cartesion product of candidates
+    // exclude pairings of a candidate with themselves
+    const candidates = job.labels.map((label) => label.labeler);
+    const candidate_pairs = candidates.reduce(
+      (pairs, x) => [
+        ...pairs,
+        ...candidates.filter((y) => x != y).map((y) => [x, y]),
+      ],
+      []
+    );
+
+    // calcualte path strengths
+    let strengths = JSON.parse(JSON.stringify(preferences));
+    for (let [c_i, c_j] of candidate_pairs) {
+      if (preferences[c_i][c_j] > preferences[c_j][c_i]) {
+        strengths[c_i][c_j] = preferences[c_i][c_j];
+      } else {
+        strengths[c_i][c_j] = 0;
+      }
+    }
+
+    for (let [c_i, c_j] of candidate_pairs) {
+      for (let c_k of candidates.filter((c) => c != c_i && c != c_j)) {
+        strengths[c_j][c_k] = Math.max(
+          strengths[c_j][c_k],
+          Math.min(strengths[c_j][c_i], strengths[c_i][c_k])
+        );
+      }
+    }
+
+    // rank candidates
+    candidates.sort((c_i, c_j) => {
+      if (strengths[c_i][c_j] > strengths[c_j][c_i]) return -1;
+      if (strengths[c_i][c_j] < strengths[c_j][c_i]) return 1;
+      return 0;
+    });
+
+    return candidates;
+  }
+
+  /**
+   * delete all jobs stored in the contract, can only be called by the account to which the contract is deployed
+   */
+  @call({ privateFunction: true })
+  clear_all_jobs(): void {
+    this.available_jobs = [];
+    this.in_progress_jobs = [];
+    this.completed_jobs = [];
   }
 }

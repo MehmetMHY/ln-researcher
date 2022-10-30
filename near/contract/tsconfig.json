@@ -2,7 +2,8 @@
   "compilerOptions": {
     "experimentalDecorators": true,
     "target": "es5",
-    "noEmit": true
+    "noEmit": true,
+    "downlevelIteration": true
   },
   "exclude": [
     "node_modules"
