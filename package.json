@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "logs": "cat $(cat ./config/config.json | python3 -c \"import sys, json ; print(json.load(sys.stdin)['logfile'])\") | pino-pretty"
+    "logs": "cat $(node -e \"console.log(require('./config/config.json').logfile)\") | pino-pretty"
   },
   "repository": {
     "type": "git",
