@@ -35,6 +35,25 @@ class JobPosting {
   completed_jobs: Job[] = [];
 
   /**
+   * Adds funds for job rewards to the smart contract
+   * Should only be called by researcher
+   */
+  @call({ payableFunction: true })
+  add_funds({}): void {
+    const amount = near.attachedDeposit();
+    this.funds = (BigInt(this.funds) + amount).toString();
+  }
+
+  /**
+   * Get the amount of funds supplied by the researcher
+   * @returns {string} funds supplied to smart contract
+   */
+  @view({})
+  get_available_funds(): string {
+    return this.funds;
+  }
+
+  /**
    * Send the specified amount of near tokens to the specified account
    * @param {string} account_id account to send the tokens to
    * @param {bigint} amount     amount to send
@@ -49,24 +68,22 @@ class JobPosting {
    * @param { ids: string[] } { ids } list of job ids to add
    * @returns {string}                result message (error or success)
    */
-  @call({ payableFunction: true })
+  @call({ privateFunction: true })
   add_jobs({ ids }: { ids: string[] }): string {
     const caller = near.predecessorAccountId();
-    const funds_attached: bigint = near.attachedDeposit();
 
     if (near.storageUsage() >= STORAGE_LIMIT) {
-      this.send_near(caller, funds_attached);
+      this.send_near(caller, BigInt(this.funds));
       return "error: not enough storage available";
     }
 
-    const reward_amount: bigint = funds_attached / BigInt(ids.length);
+    const reward_amount: bigint = BigInt(this.funds) / BigInt(ids.length);
 
     if (reward_amount < MIN_REWARD) {
-      this.send_near(caller, funds_attached);
+      this.send_near(caller, BigInt(this.funds));
       return "error: insufficient funds provided";
     }
 
-    this.funds = funds_attached.toString();
     const expires = near.blockTimestamp() + SECONDS_PER_MONTH;
 
     ids.map((id) => {
@@ -87,7 +104,7 @@ class JobPosting {
    * @param  {number[]} ids list of ids of jobs to cancel
    * @return {string}       result message (success or error)
    */
-  @call({})
+  @call({ privateFunction: true })
   cancel_jobs({ ids }: { ids: string[] }): string {
     const canceled_jobs = [];
     const errors = [];
@@ -168,9 +185,9 @@ class JobPosting {
       const review = job.reviews.find(
         (review) => review.reviewer === requester_id
       );
-
       return label || review;
     });
+
     if (assigned_job) {
       return "error: user currently assigned an unsubmitted job";
     }
@@ -192,7 +209,7 @@ class JobPosting {
       this.available_jobs.push(job);
     } else {
       const ranking = this.rank_reviews(job);
-      near.log(ranking);
+      near.log(`winner: ${ranking[0]}`);
       job.ranking = ranking;
       this.completed_jobs.push(job);
     }
