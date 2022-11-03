@@ -136,8 +136,8 @@ const configure_sub_account = async (account_id, near_connection) => {
  * @returns                        Near account object
  */
 const configure_dev_account = async (near_connection) => {
-  const account_file_path = path.join("neardev", "dev-account.json");
-  const account_env_path = path.join("neardev", "dev-account.env");
+  const account_file_path = path.join("../neardev", "dev-account.json");
+  const account_env_path = path.join("../neardev", "dev-account.env");
 
   const key_store = near_connection.connection.signer.keyStore;
 
@@ -155,8 +155,8 @@ const configure_dev_account = async (near_connection) => {
     }
   } catch (err) {
     if (err.code === "ENOENT") {
-      if (!fs.existsSync("neardev")) {
-        fs.mkdirSync("neardev");
+      if (!fs.existsSync("../neardev")) {
+        fs.mkdirSync("../neardev");
       }
     } else {
       throw err;
@@ -199,15 +199,15 @@ const deploy_smart_contract = async (account) => {
       },
     ]);
 
-    if (answer === "n") return;
+    if (answer != "y") return;
   }
 
   // deploy smart contract if necessary
   console.log("deploying smart contract");
   // build smart contract
-  execSync("cd ../contract && npm run build");
+  execSync("npm run build");
   const response = await account.deployContract(
-    fs.readFileSync("../contract/build/job_posting.wasm")
+    fs.readFileSync("../build/job_posting.wasm")
   );
 };
 
@@ -236,6 +236,13 @@ const main = async () => {
     caller_account = contract_account;
   }
   await deploy_smart_contract(contract_account);
+
+  const response = await caller_account.viewFunction({
+    contractId: contract_account.accountId,
+    methodName: "get_available_funds",
+    args: {},
+  });
+  console.log(response);
 };
 
 await main();
