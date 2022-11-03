@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const moment = require("moment")
 
 const config = require("../../config/config.json")
+
 const imgFormats = require("../../config/fileFormats.json").image
 
 const dirPath = config.dataDirPath
@@ -108,7 +109,7 @@ async function cleanDB(){
             if (!fs.existsSync(entry.filepath)) {
     
                 // do not update any database entries if that image is being worked on
-                if(entry.status !== "pending"){
+                if(entry.status !== "pending" && entry.status !== "completed"){
                     let response = await db.deleteImageData(entry.filepath)
                     if (response === 0) {
                         logger.info(`Successfully removed file ${entry.filepath} from db because the file does not exist`)
