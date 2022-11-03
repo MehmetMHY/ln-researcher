@@ -1,5 +1,5 @@
 import NearAPI, { Near } from "near-api-js";
-const { connect, KeyPair, keyStores, utils } = NearAPI;
+const { connect, KeyPair, keyStores, utils, providers } = NearAPI;
 import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
@@ -189,17 +189,26 @@ const deploy_smart_contract = async (account) => {
   const state = await account.state();
   let sc_deployed = state.code_hash != "11111111111111111111111111111111";
 
-  // deploy smart contract if necessary
-  if (!sc_deployed) {
-    console.log("deploying smart contract");
-    // build smart contract
-    execSync("cd ../contract && npm run build");
-    const response = await account.deployContract(
-      fs.readFileSync("../contract/build/job_posting.wasm")
-    );
-  } else {
-    console.log("smart contract already deployed");
+  if (sc_deployed) {
+    const { answer } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "answer",
+        message:
+          "smart contract already deployed, would you like to re-deploy? (y/n): ",
+      },
+    ]);
+
+    if (answer === "n") return;
   }
+
+  // deploy smart contract if necessary
+  console.log("deploying smart contract");
+  // build smart contract
+  execSync("cd ../contract && npm run build");
+  const response = await account.deployContract(
+    fs.readFileSync("../contract/build/job_posting.wasm")
+  );
 };
 
 /**
@@ -227,20 +236,6 @@ const main = async () => {
     caller_account = contract_account;
   }
   await deploy_smart_contract(contract_account);
-
-  let response;
-  response = await caller_account.functionCall({
-    contractId: contract_account.accountId,
-    methodName: "set_greeting",
-    args: { message: "test msg" },
-  });
-
-  response = await caller_account.viewFunction({
-    contractId: contract_account.accountId,
-    methodName: "get_greeting",
-    args: {},
-  });
-  console.log(response);
 };
 
 await main();
