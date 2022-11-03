@@ -39,7 +39,7 @@ const userData = {
         rating: { type: "number" },
         payment: { type: "number" }
     },
-    required: ["username", "publicKey", "passedChecks", "rating", "payment"],
+    required: ["username", "publicKey", "passedChecks"],
     additionalProperties: false
 }
 
@@ -61,6 +61,10 @@ const imgMetaData = {
 }
 
 module.exports = {
-    imgMetaData
+    imgMetaData,
+    userData,
+    timeData,
+    imgData,
+    resolutionData
 }
   

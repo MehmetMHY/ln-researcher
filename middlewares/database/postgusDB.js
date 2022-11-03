@@ -113,10 +113,10 @@ async function edit(key, newValue, targets){
     }
 
     const strKey = String(key)
-    const strNewValue = String(newValue)
+    const strNewValue = JSON.stringify(newValue)
     const reTargets = await jsonToAndStaement(targets)
 
-    const sqlCmd = `UPDATE images SET data = JSONB_SET(data, '{${strKey}}', '"${strNewValue}"') WHERE ${reTargets}`
+    const sqlCmd = `UPDATE images SET data = JSONB_SET(data, '{${strKey}}', '${strNewValue}') WHERE ${reTargets}`
 
     try {
         const pool = new Pool(config.postgres.connection)
