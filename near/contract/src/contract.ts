@@ -210,6 +210,8 @@ class JobPosting {
     } else {
       const ranking = this.rank_reviews(job);
       near.log(`winner: ${ranking[0]}`);
+      this.send_near(ranking[0], BigInt(job.reward));
+      this.funds = (BigInt(this.funds) - BigInt(job.reward)).toString();
       job.ranking = ranking;
       this.completed_jobs.push(job);
     }
