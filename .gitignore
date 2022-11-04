@@ -114,6 +114,6 @@ dist
 data/*
 sandbox/
 assets/data/*
-contract/build/*
-contract/neardev/*
+build
+neardev
 
