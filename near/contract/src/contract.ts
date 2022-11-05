@@ -1,12 +1,19 @@
 import { NearBindgen, near, call, view } from "near-sdk-js";
 
+enum JobStatus {
+  AVAILABLE = "available",
+  IN_PROGRESS = "in_progress",
+  COMPLETED = "completed",
+}
+
 interface Job {
   id: string;
+  description?: string;
   reward: string;
   expires: string;
   labels?: Label[];
   reviews?: Review[];
-  ranking?: string[];
+  final_ranking?: string[];
 }
 
 interface Label {
@@ -130,43 +137,31 @@ class JobPosting {
 
   /**
    * get Job objects by providing list of job ids
-   * @param  {number[]} ids list of job ids, returns all jobs if empty
-   * @return {job[]}        list of job objects with matching ids
+   * @param  {number[]}  ids    list of job ids, returns all jobs if empty
+   * @param  {JobStatus} status type of jobs to retrieve, (available, in_progress, completed)
+   * @return {job[]}            list of job objects with matching ids
    */
   @view({})
-  get_jobs({ ids }: { ids: string[] }): Job[] {
-    const all_jobs = this.available_jobs
-      .concat(this.in_progress_jobs)
-      .concat(this.completed_jobs);
-    if (!ids) return all_jobs;
-    return all_jobs.filter((job) => ids.includes(job.id));
-  }
+  get_jobs({ ids, status }: { ids: string[]; status?: JobStatus }): Job[] {
+    let jobs;
+    switch (status) {
+      case JobStatus.AVAILABLE:
+        jobs = this.available_jobs;
+        break;
+      case JobStatus.IN_PROGRESS:
+        jobs = this.in_progress_jobs;
+        break;
+      case JobStatus.COMPLETED:
+        jobs = this.completed_jobs;
+        break;
+      default:
+        jobs = this.available_jobs
+          .concat(this.in_progress_jobs)
+          .concat(this.completed_jobs);
+    }
 
-  /**
-   * Gets all jobs currently in the available jobs list
-   * @returns {Job[]} list of Job objects
-   */
-  @view({})
-  get_available_jobs(): Job[] {
-    return this.available_jobs;
-  }
-
-  /**
-   * get all jobs currently in the in progress jobs list
-   * @returns {Job[]} list of job objects
-   */
-  @view({})
-  get_in_progress_jobs(): Job[] {
-    return this.in_progress_jobs;
-  }
-
-  /**
-   * get all jobs currently in the completed jobs list
-   * @returns {Job[]} list of job objects
-   */
-  @view({})
-  get_completed_jobs(): Job[] {
-    return this.completed_jobs;
+    if (!ids) return jobs;
+    return jobs.filter((job) => ids.includes(job.id));
   }
 
   /**
@@ -212,7 +207,7 @@ class JobPosting {
       near.log(`winner: ${ranking[0]}`);
       this.send_near(ranking[0], BigInt(job.reward));
       this.funds = (BigInt(this.funds) - BigInt(job.reward)).toString();
-      job.ranking = ranking;
+      job.final_ranking = ranking;
       this.completed_jobs.push(job);
     }
 
