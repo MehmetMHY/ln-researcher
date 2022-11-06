@@ -1,4 +1,4 @@
-import NearAPI, { Near } from "near-api-js";
+import NearAPI from "near-api-js";
 const { connect, KeyPair, keyStores, utils, providers } = NearAPI;
 import * as os from "os";
 import * as path from "path";
@@ -237,12 +237,28 @@ const main = async () => {
   }
   await deploy_smart_contract(contract_account);
 
-  const response = await caller_account.viewFunction({
+  let response;
+  response = await caller_account.viewFunction({
     contractId: contract_account.accountId,
     methodName: "get_available_funds",
     args: {},
   });
   console.log(response);
+
+  response = await caller_account.functionCall({
+    contractId: contract_account.accountId,
+    methodName: "add_funds",
+    args: {},
+    attachedDeposit: 10,
+  });
+
+  response = await caller_account.functionCall({
+    contractId: contract_account.accountId,
+    methodName: "add_jobs",
+    args: { ids: ["0", "1", "2", "3"] },
+  });
+  const result = providers.getTransactionLastResult(response);
+  console.log(result);
 };
 
 await main();

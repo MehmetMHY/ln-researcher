@@ -8,7 +8,6 @@ enum JobStatus {
 
 interface Job {
   id: string;
-  description?: string;
   reward: string;
   expires: string;
   labels?: Label[];
