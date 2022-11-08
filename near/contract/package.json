@@ -1,0 +1,20 @@
+{
+  "name": "hello_near",
+  "version": "1.0.0",
+  "license": "(MIT AND Apache-2.0)",
+  "type": "module",
+  "scripts": {
+    "build": "./scripts/build.sh",
+    "deploy": "./scripts/deploy.sh",
+    "test": "ava"
+  },
+  "dependencies": {
+    "inquirer": "^9.1.4",
+    "near-api-js": "^1.1.0",
+    "near-cli": "^3.4.0",
+    "near-sdk-js": "0.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  }
+}
