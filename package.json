@@ -12,7 +12,7 @@
     "url": "git+https://github.com/MehmetMHY/near-label-data-hosting.git"
   },
   "author": "Mehmet Yilmaz",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/MehmetMHY/near-label-data-hosting/issues"
   },
