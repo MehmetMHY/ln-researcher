@@ -2,6 +2,9 @@ const crypto = require("crypto");
 const db = require("../../database/db")
 const moment = require("moment")
 const fs = require('fs');
+const logger = require("../../../utils/logger")
+
+const testDataFileName = "testSmartContractTestData.json"
 
 /*
 CREDIT FOR NOUNS/NOUNS.JSON VARIABLE/FILE
@@ -191,10 +194,22 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
         // make sure input is valid
         conditions.forEach(function(item, index){
             if(!item){
-                console.log(`Inputted params ${JSON.stringify(functionInputs)} is invalid because it failed condition number/index ${index}`)
+                logger.error(`Inputted params ${JSON.stringify(functionInputs)} is invalid because it failed condition number/index ${index}`)
                 return false
             }
         })
+
+        const inputSettings = {
+            "jobCountRange": jobCountRange,
+            "imageResolution": imageResolution,
+            "rewardRange": rewardRange,
+            "imgLabelRange": imgLabelRange,
+            "pointRange": pointRange
+        }
+
+        const filepath = `${__dirname}/${testDataFileName}`
+
+        logger.info(`Creating the researcher's smart contract test data to ${filepath} with the following settings: ${JSON.stringify(inputSettings)}`)
 
         // important, hard set, variables. double check theses variables
         const statusOptions = ["waiting", "pending", "completed"]
@@ -296,36 +311,41 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             "created": currectTime,
             "aboutFunction": {
                 "functionName": genTestData.name,
-                "input": {
-                    "jobCountRange": jobCountRange,
-                    "imageResolution": imageResolution,
-                    "rewardRange": rewardRange,
-                    "imgLabelRange": imgLabelRange,
-                    "pointRange": pointRange
-                }
+                "input": inputSettings
             },
             "output": allFakeData,
             "testUsers": userTable
         }
-    
-        // const filepath = `${__dirname}/testSmartContractTestData_${moment().unix()}.json`
-        const filepath = `${__dirname}/testSmartContractTestData.json`
 
         fs.writeFile(filepath, JSON.stringify(fileOutput, null, indent=4), 'utf8', function(err){
             if(err){
-                console.log(err)
+                logger.fatal(err)
+            } else {
+                logger.info(`Successfully created the reseacher's smart contract test data to ${filepath}`)
             }
         })
 
         return true
     
     }catch(e){
-        console.log(`The following unexpected error occurred: ${e}`)
+        logger.fatal(`The following unexpected error occurred: ${e}`)
     }
+
+    logger.error(`Failed to create researcher's smart contract test data to ${filepath}`)
 
     return false
 }
 
+async function getTestData(){
+    const filepath = `${__dirname}/${testDataFileName}`
+    if(fs.existsSync(filepath)){
+        return require(filepath)
+    } else {
+        return undefined
+    }
+}
+
 module.exports = {
-    genTestData
+    genTestData,
+    getTestData
 }
