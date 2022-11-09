@@ -170,9 +170,9 @@ function ceilAll(array){
  * @return {boolean/file} - true if no errors occurred or false if an error occurred. also a json file should be created if there are no issues.
  * 
  * EXAMPLE:
- *      genImgCoords([5,5], [3584,2240], [0.03, 0.06], [1, 4], [2, 5])
+ *      genTestData([5,5], [3584,2240], [0.03, 0.06], [1, 4], [2, 5])
 */
-async function genImgCoords(jobCountRange, imageResolution, rewardRange, imgLabelRange, pointRange){
+async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabelRange, pointRange){
     try{
         jobCountRange = ceilAll(jobCountRange)
         imageResolution = ceilAll(imageResolution)
@@ -295,7 +295,7 @@ async function genImgCoords(jobCountRange, imageResolution, rewardRange, imgLabe
         const fileOutput = {
             "created": currectTime,
             "aboutFunction": {
-                "functionName": genImgCoords.name,
+                "functionName": genTestData.name,
                 "input": {
                     "jobCountRange": jobCountRange,
                     "imageResolution": imageResolution,
@@ -326,7 +326,6 @@ async function genImgCoords(jobCountRange, imageResolution, rewardRange, imgLabe
     return false
 }
 
-
-// MAIN FUNCTION CALLS
-genImgCoords([5,5], [3584,2240], [0.03, 0.06], [1, 4], [2, 5]).then(result=>console.log(result))
-
+module.exports = {
+    genTestData
+}
