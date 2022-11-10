@@ -264,7 +264,9 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
                 entry.reviews.push({
                     reviewer: rUsers[j],
                     publicKey: tmpKeys.str.public,
-                    ranking: await shuffle(lUsers)
+                    ranking: await shuffle(lUsers),
+                    started: await randomNumber(2, currectTime, currectTime + (60*5)),
+                    ended: await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
                 })
             }
     
@@ -276,7 +278,9 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
                 entry.labels.push({
                     labeler: rUsers[j],
                     publicKey: tmpKeys.str.public,
-                    data: await genPoints(numOfLabelTopics, [pointRange[0], pointRange[1]], [0, width], [0, height])
+                    data: await genPoints(numOfLabelTopics, [pointRange[0], pointRange[1]], [0, width], [0, height]),
+                    started: await randomNumber(2, currectTime, currectTime + (60*5)),
+                    ended: await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
                 })
             }
     
