@@ -34,7 +34,8 @@ test(`Test if object that if a valid imgMetaData scheme passes ajv validation`, 
         rating: 1,
         payment: 1.2
       }
-    ]
+    ],
+    scDataRaw: {}
   }
 
   const validate = ajv.compile(schema)

@@ -54,9 +54,10 @@ const imgMetaData = {
         labelers: {
             "type": "array",
             "items": userData
-        }
+        },
+        scDataRaw: { type: "object" }
     },
-    required: ["filepath", "status", "image", "value", "timeLogs", "labelers"],
+    required: ["filepath", "status", "image", "value", "timeLogs", "labelers", "scDataRaw"],
     additionalProperties: false
 }
 
