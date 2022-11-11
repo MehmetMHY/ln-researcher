@@ -14,6 +14,11 @@ async function schemaValidate(schema, data){
     }
 }
 
+async function cleanPrint(data){
+    console.log(JSON.stringify(data, null, indent=4))
+}
+
 module.exports = {
-    schemaValidate
+    schemaValidate,
+    cleanPrint
 }
