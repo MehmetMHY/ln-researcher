@@ -3,7 +3,8 @@
     "experimentalDecorators": true,
     "target": "es5",
     "noEmit": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "lib": ["ES2020"]
   },
   "exclude": [
     "node_modules"
