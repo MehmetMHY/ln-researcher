@@ -10,19 +10,22 @@ interface Job {
   id: string;
   reward: string;
   expires: string;
-  labels?: Label[];
-  reviews?: Review[];
+  tasks: Task[];
   final_ranking?: string[];
 }
 
-interface Label {
-  labeler: string;
-  data: any;
+enum TaskType {
+  LABEL = "label",
+  REVIEW = "review",
 }
 
-interface Review {
-  reviewer: string;
-  ranking: any;
+interface Task {
+  type: string;
+  assigned_to: string;
+  public_key: string;
+  time_assigned: string;
+  time_submitted?: string;
+  data?: any;
 }
 
 const SECONDS_PER_MONTH: bigint = BigInt(2592000); // (30 days)
@@ -97,10 +100,14 @@ class JobPosting {
         id: id,
         reward: `${reward_amount}`,
         expires: `${expires}`,
-        labels: [],
-        reviews: [],
+        tasks: [],
       });
     });
+
+    this.funds = (
+      BigInt(this.funds) -
+      reward_amount * BigInt(ids.length)
+    ).toString();
 
     return "success: jobs added to available jobs list";
   }
@@ -142,7 +149,7 @@ class JobPosting {
    */
   @view({})
   get_jobs({ ids, status }: { ids: string[]; status?: JobStatus }): Job[] {
-    let jobs;
+    let jobs: Job[];
     switch (status) {
       case JobStatus.AVAILABLE:
         jobs = this.available_jobs;
@@ -163,43 +170,103 @@ class JobPosting {
     return jobs.filter((job) => ids.includes(job.id));
   }
 
+  @call({ privateFunction: true })
+  recall_task({
+    job_id,
+    assigned_to,
+  }: {
+    job_id: string;
+    assigned_to: string;
+  }): void {
+    const job = this.in_progress_jobs.find((job) => job.id === job_id);
+    this.in_progress_jobs = this.in_progress_jobs.filter(
+      (ip_job) => ip_job != job
+    );
+    const to_recall = job.tasks.find(
+      (task) => task.assigned_to === assigned_to
+    );
+    job.tasks = job.tasks.filter((task) => task != to_recall);
+    this.available_jobs.push(job);
+  }
+
   /**
-   * Request a job
-   * @returns {Job | string} assigned job or error message
+   * Request a task, will assign a label or review, depending on what is needed
+   * @returns {Task | string} assigned task or error message
    */
   @call({})
-  request_job(): Job | string {
+  request_task(): { id: string; task: Task } | string {
     if (this.available_jobs.length === 0) {
       return "error: no available jobs";
     }
 
     const requester_id = near.predecessorAccountId();
-    const assigned_job = this.in_progress_jobs.find((job) => {
-      const label = job.labels.find((label) => label.labeler === requester_id);
-      const review = job.reviews.find(
-        (review) => review.reviewer === requester_id
+    const assigned_task = this.in_progress_jobs.find((job) => {
+      const assigned_tasks = job.tasks.find(
+        (task) => task.assigned_to === requester_id
       );
-      return label || review;
+      return assigned_tasks != undefined;
     });
 
-    if (assigned_job) {
-      return "error: user currently assigned an unsubmitted job";
+    if (assigned_task) {
+      return "error: user currently assigned an unsubmitted task";
     }
 
-    let job = this.available_jobs.pop();
-    if (job.labels.length < NUM_LABELS) {
-      job.labels.push({ labeler: requester_id, data: {} });
-    } else if (job.reviews.length < NUM_REVIEWS) {
-      job.reviews.push({ reviewer: requester_id, ranking: {} });
+    let job: Job = this.available_jobs.pop();
+
+    const num_labels = job.tasks.filter(
+      (task) => task.type === TaskType.LABEL
+    ).length;
+
+    const num_reviews = job.tasks.filter(
+      (task) => task.type === TaskType.REVIEW
+    ).length;
+
+    let task_type: TaskType;
+    if (num_labels < NUM_LABELS) {
+      task_type = TaskType.LABEL;
+    } else if (num_reviews < NUM_REVIEWS) {
+      task_type = TaskType.REVIEW;
+    } else {
+      return "error: job already completed";
     }
 
+    let task: Task = {
+      type: task_type,
+      assigned_to: near.predecessorAccountId(),
+      time_assigned: near.blockTimestamp().toString(),
+      public_key: near.signerAccountPk(),
+    };
+
+    job.tasks.push(task);
     this.in_progress_jobs.push(job);
-    return job;
+    return { id: job.id, task: task };
   }
 
   @call({})
-  submit_job({ job }: { job: Job }): void {
-    if (job.labels.length < NUM_LABELS || job.reviews.length < NUM_REVIEWS) {
+  submit_task({
+    job_id,
+    submission,
+  }: {
+    job_id: string;
+    submission: Task;
+  }): void {
+    const job = this.in_progress_jobs.find((job) => job.id === job_id);
+    let task = job.tasks.find(
+      (task) => task.assigned_to === near.predecessorAccountId()
+    );
+    job.tasks = job.tasks.filter((tmp) => tmp != task);
+    task = { time_submitted: near.blockTimestamp().toString(), ...submission };
+    job.tasks.push(task);
+
+    const num_labels = job.tasks.filter(
+      (task) => task.type === TaskType.LABEL
+    ).length;
+
+    const num_reviews = job.tasks.filter(
+      (task) => task.type === TaskType.REVIEW
+    ).length;
+
+    if (num_labels < NUM_LABELS || num_reviews < NUM_REVIEWS) {
       this.available_jobs.push(job);
     } else {
       const ranking = this.rank_reviews(job);
@@ -217,14 +284,16 @@ class JobPosting {
 
   rank_reviews(job: Job): string[] {
     // group votes by ranking
-    const votes: Map<string[], number> = job.reviews.reduce((acc, review) => {
-      if (acc.has(review.ranking)) {
-        acc.set(review.ranking, acc.get(review.ranking) + 1);
-      } else {
-        acc.set(review.ranking, 1);
-      }
-      return acc;
-    }, new Map());
+    const votes: Map<string[], number> = job.tasks
+      .filter((task) => task.type === TaskType.REVIEW)
+      .reduce((acc, task) => {
+        if (acc.has(task.data.ranking)) {
+          acc.set(task.data.ranking, acc.get(task.data.ranking) + 1);
+        } else {
+          acc.set(task.data.ranking, 1);
+        }
+        return acc;
+      }, new Map());
 
     // compute pairwise candidate preferences
     let preferences = {};
@@ -250,7 +319,9 @@ class JobPosting {
 
     // generate cartesion product of candidates
     // exclude pairings of a candidate with themselves
-    const candidates = job.labels.map((label) => label.labeler);
+    const candidates = job.tasks
+      .filter((task) => task.type === TaskType.LABEL)
+      .map((task) => task.assigned_to);
     const candidate_pairs = candidates.reduce(
       (pairs, x) => [
         ...pairs,
