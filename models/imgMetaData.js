@@ -1,71 +1,19 @@
-const resolutionData = {
-    type: "object",
-    properties: {
-        height: { type: "number" },
-        width: { type: "number" }
-    },
-    required: ["height", "width"],
-    additionalProperties: false
-}
-
-const imgData = {
-    type: "object",
-    properties: {
-        raw: { type: "object" },
-        label: { type: "object" },
-        resolution: resolutionData
-    },
-    required: ["label", "resolution"],
-    additionalProperties: false
-}
-
-const timeData = {
-    type: "object",
-    properties: {
-        uploaded: { type: "number" },
-        completed: { type: "number" },
-        units: { enum: ["ms", "s"] }
-    },
-    required: ["uploaded", "completed", "units"],
-    additionalProperties: false
-}
-
-const userData = {
-    type: "object",
-    properties: {
-        username: { type: "string" },
-        publicKey: { type: "string" },
-        passedChecks: { type: "array" },
-        rating: { type: "number" },
-        payment: { type: "number" }
-    },
-    required: ["username", "publicKey", "passedChecks"],
-    additionalProperties: false
-}
-
 const imgMetaData = {
     type: "object",
     properties: {
         filepath: { type: "string" },
         status: { enum: ["waiting", "pending", "completed"] },
-        image: imgData,
-        value: { type: "number" },
-        timeLogs: timeData,
-        labelers: {
-            "type": "array",
-            "items": userData
-        },
+        cost: { type: "number" },
+        uploaded: { type: "number" },
+        completed: { type: "number" },
+        timeUnits: { enum: ["ms", "s"] },
+        finalLabels: { type: "object" },
         scDataRaw: { type: "object" }
     },
-    required: ["filepath", "status", "image", "value", "timeLogs", "labelers", "scDataRaw"],
+    required: ["filepath", "status", "cost", "uploaded", "completed", "timeUnits", "finalLabels", "scDataRaw"],
     additionalProperties: false
 }
 
 module.exports = {
-    imgMetaData,
-    userData,
-    timeData,
-    imgData,
-    resolutionData
+    imgMetaData
 }
-  

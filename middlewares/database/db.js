@@ -3,7 +3,6 @@ const moment = require("moment")
 const util = require("../../utils/util")
 const logger = require("../../utils/logger")
 const fs = require('fs')
-const sizeOf = require('image-size')
 
 const config = require("../../config/config.json")
 const dbEntrySchema = require("../../models/imgMetaData").imgMetaData
@@ -25,29 +24,18 @@ async function addImageData(filepath){
 
     if (fs.existsSync(String(filepath))) {
 
-        const dimensions = sizeOf(filepath)
-
         const fileDbList = await postgusDB.get( { filepath: filepath } )
 
         if (fileDbList.result && fileDbList.result.length === 0) {
+            
             const entry = {
                 filepath: filepath,
                 status: "waiting",
-                image: { 
-                    raw: {}, 
-                    label: {},
-                    resolution: {
-                        height: dimensions.height,
-                        width: dimensions.width
-                    }
-                },
-                value: 0,
-                timeLogs: {
-                  uploaded: moment().valueOf(),
-                  completed: -1,
-                  units: "ms"
-                },
-                labelers: [],
+                cost: 0,
+                uploaded: moment().valueOf(),
+                completed: -1,
+                timeUnits: "ms",
+                finalLabels: {},
                 scDataRaw: {}
             }
     
