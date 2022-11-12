@@ -176,6 +176,8 @@ function ceilAll(array){
  *      genTestData([5,5], [3584,2240], [0.03, 0.06], [1, 4], [2, 5])
 */
 async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabelRange, pointRange){
+    const filepath = `${__dirname}/${testDataFileName}`
+
     try{
         jobCountRange = ceilAll(jobCountRange)
         imageResolution = ceilAll(imageResolution)
@@ -206,8 +208,6 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             "imgLabelRange": imgLabelRange,
             "pointRange": pointRange
         }
-
-        const filepath = `${__dirname}/${testDataFileName}`
 
         logger.info(`Creating the researcher's smart contract test data to ${filepath} with the following settings: ${JSON.stringify(inputSettings)}`)
 
@@ -241,8 +241,7 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
                 reward: await randomNumber(4, rewardRange[0], rewardRange[1]),
                 expires: currectTime + oneMonthSeconds,
                 ranking: [],
-                labels: [],
-                reviews: []
+                tasks: []
             }
     
             let lUsers = []
@@ -257,30 +256,32 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             }
     
             entry["ranking"] = await shuffle(lUsers)
-    
-            for(let j = 0; j < rUsers.length; j++){
-                let tmpKeys = await getRSAKeys()
-                userTable[rUsers[j]] = tmpKeys.str
-                entry.reviews.push({
-                    reviewer: rUsers[j],
-                    publicKey: tmpKeys.str.public,
-                    ranking: await shuffle(lUsers),
-                    started: await randomNumber(2, currectTime, currectTime + (60*5)),
-                    ended: await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
-                })
-            }
-    
+
             const numOfLabelTopics = await randomNumber(0, imgLabelRange[0], imgLabelRange[1])
     
             for(let j = 0; j < lUsers.length; j++){
                 let tmpKeys = await getRSAKeys()
                 userTable[lUsers[j]] = tmpKeys.str
-                entry.labels.push({
-                    labeler: rUsers[j],
-                    publicKey: tmpKeys.str.public,
+                entry.tasks.push({
+                    type: "label",
+                    assigned_to: rUsers[j],
+                    public_key: tmpKeys.str.public,
                     data: await genPoints(numOfLabelTopics, [pointRange[0], pointRange[1]], [0, width], [0, height]),
-                    started: await randomNumber(2, currectTime, currectTime + (60*5)),
-                    ended: await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
+                    "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
+                    "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
+                })
+            }
+    
+            for(let j = 0; j < rUsers.length; j++){
+                let tmpKeys = await getRSAKeys()
+                userTable[rUsers[j]] = tmpKeys.str
+                entry.tasks.push({
+                    type: "review",
+                    asigned_to: rUsers[j],
+                    public_key: tmpKeys.str.public,
+                    data: await shuffle(lUsers),
+                    "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
+                    "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
                 })
             }
     
@@ -288,18 +289,14 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             const coinFilp = await randomNumber(0, 0, 1)
     
             if(waitings > 0){
-                entry.labels = []
-                entry.reviews = []
+                entry.tasks = []
                 entry.ranking = []
                 entry.status = statusOptions[0]
                 waitings -= 1
             } 
             else if(pendings > 0){
-                if(coinFilp === 0){
-                    entry.reviews = []
-                } else {
-                    entry.reviews = entry.reviews.slice(0, await randomNumber(0, 1, 2))
-                }
+                entry.tasks = entry.tasks.slice(0, await randomNumber(0, 1, 2))
+                entry.ranking = []
                 entry.status = statusOptions[1]
                 pendings -= 1
             }
@@ -353,3 +350,5 @@ module.exports = {
     genTestData,
     getTestData
 }
+
+genTestData([5,5], [3584,2240], [0.03, 0.06], [1, 4], [2, 5]).then()
