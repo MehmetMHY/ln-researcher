@@ -1,8 +1,7 @@
 const axios = require('axios');
+const util = require("./util")
 
-const timeout = 2000
-const retries = 1
-const retryDelay = 1000
+const config = require("../config/config.json").requesterConfig
 
 function sleep(ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) });
@@ -14,7 +13,7 @@ async function get(url, headers={}) {
     const axiosConfig = {
         url: String(url),
         method: "get",
-        timeout: timeout,
+        timeout: config.timeout,
         headers: Object.assign({
             "Content-Type": "application/json"
             }, headers
@@ -23,7 +22,7 @@ async function get(url, headers={}) {
 
     let attempt = 0
     while(true){
-        if (attempt > retries) {
+        if (attempt > config.retries) {
             output["status"] = 1
             break
         }
@@ -37,7 +36,7 @@ async function get(url, headers={}) {
             }
             break
         } catch(err) {
-            await sleep(retryDelay)
+            await sleep(config.retryDelay)
         }
         
         attempt += 1
@@ -46,7 +45,6 @@ async function get(url, headers={}) {
     return output
 }
 
-get("http://localhost:3000/health").then(response => {
-    console.log(JSON.stringify(response, null, indent=4))
-})
-
+module.exports = {
+    get
+}

@@ -12,5 +12,10 @@
     },
     "pausedTestFiles": [
         "logger.test.js"
-    ]
+    ],
+    "requesterConfig": {
+        "timeout": 2000,
+        "retries": 1,
+        "retryDelay": 1000
+    }
 }
