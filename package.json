@@ -8,7 +8,9 @@
     "logs": "cat $(node -e \"console.log(require('./config/config.json').logfile)\") | pino-pretty",
     "addDB": "node -e \"require('./middlewares/db_manager/tools').addAllToDB().then(result=>console.log('Added/Built Image DB:', result))\"",
     "cleanDB": "node -e \"require('./middlewares/db_manager/tools').cleanDB().then(result=>console.log('Cleaned Image DB:', result))\"",
-    "ls": "node -e \"console.table(Object.keys(require('./package.json').scripts))\""
+    "ls": "node -e \"console.table(Object.keys(require('./package.json').scripts))\"",
+    "devRunAPI": "source .env.development ; nodemon app.js",
+    "devRunManager": "source .env.development ; node manager.js"
   },
   "repository": {
     "type": "git",

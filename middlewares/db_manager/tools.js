@@ -4,6 +4,7 @@ const db = require("../database/db")
 const logger = require("../../utils/logger")
 const { v4: uuidv4 } = require('uuid');
 const moment = require("moment")
+const request = require("../../utils/request")
 
 const config = require("../../config/config.json")
 
@@ -142,9 +143,22 @@ async function cleanDB(){
     return stats
 }
 
+async function apiLocalRunning(){
+    const localhostURL = `http://localhost:${process.env.PORT}/health`
+    
+    const response = await request.get(localhostURL)
+    
+    if (response.status === 0) {
+        return true
+    } else {
+        return false
+    }
+}
+
 module.exports = {
     getFilesInDir,
     getImgsInDir,
     addAllToDB,
-    cleanDB
+    cleanDB,
+    apiLocalRunning
 }
