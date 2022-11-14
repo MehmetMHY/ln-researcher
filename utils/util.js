@@ -18,7 +18,12 @@ async function cleanPrint(data){
     console.log(JSON.stringify(data, null, indent=4))
 }
 
+function sleep(ms) {
+    return new Promise((resolve) => { setTimeout(resolve, ms) });
+}
+
 module.exports = {
     schemaValidate,
-    cleanPrint
+    cleanPrint,
+    sleep
 }

@@ -32,4 +32,9 @@ https://ajv.js.org/guide/why-ajv.html
 https://www.npmjs.com/package/ajv
 https://dev.to/deepika_banoth/how-to-use-jsonbset-function-in-postgresql-35eo
 https://devhints.io/postgresql-json
+https://dev.to/ericchapman/nodejs-express-part-5-routes-and-controllers-55d3
+https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+https://axios-http.com/docs/req_config
+https://stackoverflow.com/questions/55458239/naming-convention-for-environment-variables-files
+https://www.geeksforgeeks.org/how-to-access-variables-from-another-file-using-javascript/
 
