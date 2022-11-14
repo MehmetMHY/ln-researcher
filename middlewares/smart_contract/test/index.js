@@ -26,27 +26,12 @@ CREDIT FOR GETRSAKEYS() FUNCTION
 */
 async function getRSAKeys(){
     const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-        namedCurve: 'secp256k1',
         modulusLength: 2048,
-        publicKeyEncoding: {
-            type: 'spki',
-            format: 'der'
-        },
-        privateKeyEncoding: {
-            type: 'pkcs8',
-            format: 'der'
-        }
-    });
+    })
 
     return {
-        "obj": {
-            public: publicKey,
-            private: privateKey
-        },
-        "str": {
-            public: publicKey.toString("hex"),
-            private: privateKey.toString("hex")
-        }
+        public: publicKey.export({ type: "pkcs1", format: "pem" }),
+        private: privateKey.export({ type: "pkcs1", format: "pem" })
     }
 }
 
@@ -178,163 +163,155 @@ function ceilAll(array){
 async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabelRange, pointRange){
     const filepath = `${__dirname}/${testDataFileName}`
 
-    try{
-        jobCountRange = ceilAll(jobCountRange)
-        imageResolution = ceilAll(imageResolution)
-        rewardRange = ceilAll(rewardRange)
-        imgLabelRange = ceilAll(imgLabelRange)
-        pointRange = ceilAll(pointRange)
+    jobCountRange = ceilAll(jobCountRange)
+    imageResolution = ceilAll(imageResolution)
+    rewardRange = ceilAll(rewardRange)
+    imgLabelRange = ceilAll(imgLabelRange)
+    pointRange = ceilAll(pointRange)
 
-        const conditions = [
-            (Array.isArray(jobCountRange) && Array.isArray(imageResolution) && Array.isArray(rewardRange) && Array.isArray(imgLabelRange) && Array.isArray(pointRange)),
-            (jobCountRange.length === 2 && imageResolution.length === 2 && rewardRange.length === 2 && imgLabelRange.length === 2 && pointRange.length === 2),
-            (allNum(jobCountRange) && allNum(imageResolution) && allNum(rewardRange) && allNum(imgLabelRange) && allNum(pointRange)),
-            (jobCountRange[0] <= jobCountRange[1] && rewardRange[0] <= rewardRange[1] && imgLabelRange[0] <= imgLabelRange[1] && pointRange[0] <= pointRange[1]),
-            (addAll(jobCountRange) > 0 &&  addAll(imageResolution) > 0 && addAll(imgLabelRange) > 0 && addAll(pointRange) > 0)
-        ]
+    const conditions = [
+        (Array.isArray(jobCountRange) && Array.isArray(imageResolution) && Array.isArray(rewardRange) && Array.isArray(imgLabelRange) && Array.isArray(pointRange)),
+        (jobCountRange.length === 2 && imageResolution.length === 2 && rewardRange.length === 2 && imgLabelRange.length === 2 && pointRange.length === 2),
+        (allNum(jobCountRange) && allNum(imageResolution) && allNum(rewardRange) && allNum(imgLabelRange) && allNum(pointRange)),
+        (jobCountRange[0] <= jobCountRange[1] && rewardRange[0] <= rewardRange[1] && imgLabelRange[0] <= imgLabelRange[1] && pointRange[0] <= pointRange[1]),
+        (addAll(jobCountRange) > 0 &&  addAll(imageResolution) > 0 && addAll(imgLabelRange) > 0 && addAll(pointRange) > 0)
+    ]
 
-        // make sure input is valid
-        conditions.forEach(function(item, index){
-            if(!item){
-                logger.error(`Inputted params ${JSON.stringify(functionInputs)} is invalid because it failed condition number/index ${index}`)
-                return false
-            }
-        })
-
-        const inputSettings = {
-            "jobCountRange": jobCountRange,
-            "imageResolution": imageResolution,
-            "rewardRange": rewardRange,
-            "imgLabelRange": imgLabelRange,
-            "pointRange": pointRange
+    // make sure input is valid
+    conditions.forEach(function(item, index){
+        if(!item){
+            logger.error(`Inputted params ${JSON.stringify(functionInputs)} is invalid because it failed condition number/index ${index}`)
+            return false
         }
+    })
 
-        logger.info(`Creating the researcher's smart contract test data to ${filepath} with the following settings: ${JSON.stringify(inputSettings)}`)
-
-        // important, hard set, variables. double check theses variables
-        const statusOptions = ["waiting", "pending", "completed"]
-        const uniqUserCountTotal = 3 * 2
-        const oneMonthSeconds = 30 * 24 * 60 * 60
-
-        const currectTime = await currectEpoch()
-    
-        const currectDB = await db.getImageData()
-        const ids = currectDB.map(obj => obj.id)
-    
-        const width = imageResolution[0]
-        const height = imageResolution[1]
-    
-        const jobs = await randomNumber(0, jobCountRange[0], jobCountRange[1])
-    
-        let statusDivide = Math.floor(jobs/(statusOptions.length))
-        let waitings = statusDivide
-        let pendings = statusDivide
-        let completes = jobs-(2*statusDivide)
-    
-        let allFakeData = []
-        let userTable = {}
-        let userCounter = 0
-        for(let i = 0; i < jobs; i++){
-            let entry = {
-                id: ids[i],
-                status: "",
-                reward: await randomNumber(4, rewardRange[0], rewardRange[1]),
-                expires: currectTime + oneMonthSeconds,
-                ranking: [],
-                tasks: []
-            }
-    
-            let lUsers = []
-            let rUsers = []
-            for(let j = 0; j < uniqUserCountTotal; j++){
-                if(j < Math.floor((uniqUserCountTotal/2))){
-                    lUsers.push(`user${userCounter}.near`)
-                } else {
-                    rUsers.push(`user${userCounter}.near`)
-                }
-                userCounter += 1
-            }
-    
-            entry["ranking"] = await shuffle(lUsers)
-
-            const numOfLabelTopics = await randomNumber(0, imgLabelRange[0], imgLabelRange[1])
-    
-            for(let j = 0; j < lUsers.length; j++){
-                let tmpKeys = await getRSAKeys()
-                userTable[lUsers[j]] = tmpKeys.str
-                entry.tasks.push({
-                    type: "label",
-                    assigned_to: rUsers[j],
-                    public_key: tmpKeys.str.public,
-                    data: await genPoints(numOfLabelTopics, [pointRange[0], pointRange[1]], [0, width], [0, height]),
-                    "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
-                    "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
-                })
-            }
-    
-            for(let j = 0; j < rUsers.length; j++){
-                let tmpKeys = await getRSAKeys()
-                userTable[rUsers[j]] = tmpKeys.str
-                entry.tasks.push({
-                    type: "review",
-                    asigned_to: rUsers[j],
-                    public_key: tmpKeys.str.public,
-                    data: await shuffle(lUsers),
-                    "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
-                    "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
-                })
-            }
-    
-            // add to the final output
-            const coinFilp = await randomNumber(0, 0, 1)
-    
-            if(waitings > 0){
-                entry.tasks = []
-                entry.ranking = []
-                entry.status = statusOptions[0]
-                waitings -= 1
-            } 
-            else if(pendings > 0){
-                entry.tasks = entry.tasks.slice(0, await randomNumber(0, 1, 2))
-                entry.ranking = []
-                entry.status = statusOptions[1]
-                pendings -= 1
-            }
-            else{
-                entry.status = statusOptions[2]
-                completes -= 1
-            }
-    
-            allFakeData.push(entry)
-        }
-    
-        const fileOutput = {
-            "created": currectTime,
-            "aboutFunction": {
-                "functionName": genTestData.name,
-                "input": inputSettings
-            },
-            "output": allFakeData,
-            "testUsers": userTable
-        }
-
-        fs.writeFile(filepath, JSON.stringify(fileOutput, null, indent=4), 'utf8', function(err){
-            if(err){
-                logger.fatal(err)
-            } else {
-                logger.info(`Successfully created the reseacher's smart contract test data to ${filepath}`)
-            }
-        })
-
-        return true
-    
-    }catch(e){
-        logger.fatal(`The following unexpected error occurred: ${e}`)
+    const inputSettings = {
+        "jobCountRange": jobCountRange,
+        "imageResolution": imageResolution,
+        "rewardRange": rewardRange,
+        "imgLabelRange": imgLabelRange,
+        "pointRange": pointRange
     }
 
-    logger.error(`Failed to create researcher's smart contract test data to ${filepath}`)
+    logger.info(`Creating the researcher's smart contract test data to ${filepath} with the following settings: ${JSON.stringify(inputSettings)}`)
 
-    return false
+    // important, hard set, variables. double check theses variables
+    const statusOptions = ["waiting", "pending", "completed"]
+    const uniqUserCountTotal = 3 * 2
+    const oneMonthSeconds = 30 * 24 * 60 * 60
+
+    const currectTime = await currectEpoch()
+
+    const currectDB = await db.getImageData()
+    const ids = currectDB.map(obj => obj.id)
+
+    const width = imageResolution[0]
+    const height = imageResolution[1]
+
+    const jobs = await randomNumber(0, jobCountRange[0], jobCountRange[1])
+
+    let statusDivide = Math.floor(jobs/(statusOptions.length))
+    let waitings = statusDivide
+    let pendings = statusDivide
+    let completes = jobs-(2*statusDivide)
+
+    let allFakeData = []
+    let userTable = {}
+    let userCounter = 0
+    for(let i = 0; i < jobs; i++){
+        let entry = {
+            id: ids[i],
+            status: "",
+            reward: await randomNumber(4, rewardRange[0], rewardRange[1]),
+            expires: currectTime + oneMonthSeconds,
+            ranking: [],
+            tasks: []
+        }
+
+        let lUsers = []
+        let rUsers = []
+        for(let j = 0; j < uniqUserCountTotal; j++){
+            if(j < Math.floor((uniqUserCountTotal/2))){
+                lUsers.push(`user${userCounter}.near`)
+            } else {
+                rUsers.push(`user${userCounter}.near`)
+            }
+            userCounter += 1
+        }
+
+        entry["ranking"] = await shuffle(lUsers)
+
+        const numOfLabelTopics = await randomNumber(0, imgLabelRange[0], imgLabelRange[1])
+
+        for(let j = 0; j < lUsers.length; j++){
+            let tmpKeys = await getRSAKeys()
+            userTable[lUsers[j]] = tmpKeys
+            entry.tasks.push({
+                type: "label",
+                assigned_to: rUsers[j],
+                public_key: tmpKeys.public,
+                data: await genPoints(numOfLabelTopics, [pointRange[0], pointRange[1]], [0, width], [0, height]),
+                "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
+                "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
+            })
+        }
+
+        for(let j = 0; j < rUsers.length; j++){
+            let tmpKeys = await getRSAKeys()
+            userTable[rUsers[j]] = tmpKeys
+            entry.tasks.push({
+                type: "review",
+                asigned_to: rUsers[j],
+                public_key: tmpKeys.public,
+                data: await shuffle(lUsers),
+                "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
+                "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
+            })
+        }
+
+        // add to the final output
+        const coinFilp = await randomNumber(0, 0, 1)
+
+        if(waitings > 0){
+            entry.tasks = []
+            entry.ranking = []
+            entry.status = statusOptions[0]
+            waitings -= 1
+        } 
+        else if(pendings > 0){
+            entry.tasks = entry.tasks.slice(0, await randomNumber(0, 1, 2))
+            entry.ranking = []
+            entry.status = statusOptions[1]
+            pendings -= 1
+        }
+        else{
+            entry.status = statusOptions[2]
+            completes -= 1
+        }
+
+        allFakeData.push(entry)
+    }
+
+    const fileOutput = {
+        "metadata": {
+            "function": genTestData.name,
+            "input": inputSettings,
+            "filepath": filepath,
+            "created": currectTime
+        },
+        "output": allFakeData,
+        "testUsers": userTable,
+    }
+
+    fs.writeFile(filepath, JSON.stringify(fileOutput, null, indent=4), 'utf8', function(err){
+        if(err){
+            logger.fatal(err)
+        } else {
+            logger.info(`Successfully created the reseacher's smart contract test data to ${filepath}`)
+        }
+    })
+
+    return fileOutput
 }
 
 async function getTestData(){
@@ -350,5 +327,3 @@ module.exports = {
     genTestData,
     getTestData
 }
-
-genTestData([5,5], [3584,2240], [0.03, 0.06], [1, 4], [2, 5]).then()

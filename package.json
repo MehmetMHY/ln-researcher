@@ -9,6 +9,7 @@
     "addDB": "node -e \"require('./middlewares/db_manager/tools').addAllToDB().then(result=>console.log('Added/Built Image DB:', result))\"",
     "cleanDB": "node -e \"require('./middlewares/db_manager/tools').cleanDB().then(result=>console.log('Cleaned Image DB:', result))\"",
     "ls": "node -e \"console.table(Object.keys(require('./package.json').scripts))\"",
+    "scGenTestData": "node -e \"require('./middlewares/smart_contract/test/index.js').genTestData([5,5],[3584,2240],[0.03, 0.06],[1, 4],[2, 5]).then(result=>console.log('Created smart contract test data/json at:', result.metadata.filepath))\"",
     "devRunAPI": "source .env.development ; nodemon app.js",
     "devRunManager": "source .env.development ; node manager.js"
   },
