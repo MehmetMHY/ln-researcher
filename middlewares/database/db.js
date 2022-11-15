@@ -36,7 +36,8 @@ async function addImageData(filepath){
                 completed: -1,
                 timeUnits: "ms",
                 finalLabels: {},
-                scDataRaw: {}
+                scDataRaw: {},
+                usedSignatures: []
             }
     
             const validFormat = util.schemaValidate(dbEntrySchema, entry)

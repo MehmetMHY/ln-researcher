@@ -63,38 +63,7 @@ async function getImage(req, res) {
                         console.log(4)
                         // return res.status(200).send(`:) VALID!`)
                         if (fs.existsSync(filepath)){
-                            console.log(5)
-                            const realImg = fs.readFileSync(filepath)
-                            const key = crypto.randomBytes(64).toString('hex')
-                            let output = {
-                                "image": CryptoJS.Rabbit.encrypt(realImg, key),
-                                "encKey": crypto.publicEncrypt(
-                                    {
-                                        key: userPubKey,
-                                        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-                                        oaepHash: "sha256",
-                                    },
-                                    Buffer.from(key)
-                                ).toString("base64")
-                            }
-
-                            output = CryptoJS.Rabbit.decrypt(output.image, key);
-
-                            res.writeHead(200, { "Content-type": "application/json" });
-                            res.write(JSON.stringify(output));
-                            res.end();
-                            return res
-
-                            // // just testing
-                            // x = JSON.stringify(output)
-                            // y = JSON.parse(x).image
-                            // z = CryptoJS.Rabbit.decrypt(y, key)
-                            // res.writeHead(200, { "Content-type": "application/json" });
-                            // res.write(JSON.stringify(z));
-                            // res.end();
-                            // return res.sendFile(filepath)
-
-                            // return res.status(200).json(output)
+                            return res.sendFile(filepath)
                         }
                     }
                 } catch(err) {

@@ -5,7 +5,7 @@ const axios = require("axios")
 const scTestData = require("../middlewares/smart_contract/test/testSmartContractTestData.json")
 
 async function apiTestImageEndpoint() {
-  const id = "26fc9ae1-4a56-483a-82d7-b7f40478042b"
+  const id = "41dd387e-2deb-4a1e-93d4-34bc42e5fea9"
   const username = "user25.near"
 
   const user = scTestData.testUsers[username]

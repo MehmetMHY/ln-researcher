@@ -8,9 +8,10 @@ const imgMetaData = {
         completed: { type: "number" },
         timeUnits: { enum: ["ms", "s"] },
         finalLabels: { type: "object" },
-        scDataRaw: { type: "object" }
+        scDataRaw: { type: "object" },
+        usedSignatures: { type: "array" }
     },
-    required: ["filepath", "status", "cost", "uploaded", "completed", "timeUnits", "finalLabels", "scDataRaw"],
+    required: ["filepath", "status", "cost", "uploaded", "completed", "timeUnits", "finalLabels", "scDataRaw", "usedSignatures"],
     additionalProperties: false
 }
 

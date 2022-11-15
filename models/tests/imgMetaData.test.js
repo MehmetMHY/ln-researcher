@@ -17,7 +17,8 @@ test(`Test if object that is a valid imgMetaData scheme passes ajv validation`, 
     completed: 1666618873000,
     timeUnits: "ms",
     finalLabels: {},
-    scDataRaw: {}
+    scDataRaw: {},
+    usedSignatures: []
   }
 
   const validate = ajv.compile(schema)
