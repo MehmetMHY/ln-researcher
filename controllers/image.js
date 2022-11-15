@@ -8,7 +8,7 @@ const logger = require("../utils/logger")
 
 async function getImage(req, res) {
     const username = req.body.username
-    const signature = Buffer.from(req.body.signature, "base64")
+    const signature = req.body.signature
 
     if(!username || !signature){
         return res.status(400).send(`invalid, or lack of, valid header values were provided for this request`)
@@ -57,13 +57,21 @@ async function getImage(req, res) {
                             key: userPubKey,
                             padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
                         },
-                        signature
+                        Buffer.from(signature, "base64")
                     );
                     if(isVerified){
                         console.log(4)
                         // return res.status(200).send(`:) VALID!`)
-                        if (fs.existsSync(filepath)){
-                            return res.sendFile(filepath)
+                        let usedSignatures = dbImageData[0]["usedSignatures"]
+                        if(usedSignatures.includes(signature) === false){
+                            if (fs.existsSync(filepath)){
+                                usedSignatures.push(signature)
+                                let dbOut = await db.editImageData(filepath, { usedSignatures: usedSignatures }, { filepath: filepath })
+                                console.log(dbOut)
+    
+                                console.log(usedSignatures)
+                                return res.sendFile(filepath)
+                            }
                         }
                     }
                 } catch(err) {
