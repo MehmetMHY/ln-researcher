@@ -248,7 +248,7 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             userTable[lUsers[j]] = tmpKeys
             entry.tasks.push({
                 type: "label",
-                assigned_to: rUsers[j],
+                assigned_to: lUsers[j],
                 public_key: tmpKeys.public,
                 data: await genPoints(numOfLabelTopics, [pointRange[0], pointRange[1]], [0, width], [0, height]),
                 "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
