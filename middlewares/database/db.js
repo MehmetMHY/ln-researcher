@@ -81,7 +81,7 @@ async function deleteImageData(filepath){
         return -1
     }
 
-    logger.warning(`Did not remove file ${filepath} data from db because that file's db entry already does not exist`)
+    logger.warn(`Did not remove file ${filepath} data from db because that file's db entry already does not exist`)
     return 1
 }
 
