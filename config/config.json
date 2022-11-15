@@ -17,5 +17,6 @@
         "timeout": 2000,
         "retries": 1,
         "retryDelay": 1000
-    }
+    },
+    "labelDescriptionPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/description.txt"
 }
