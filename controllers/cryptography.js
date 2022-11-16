@@ -1,8 +1,8 @@
-const crypto = require("crypto");
-const fs = require("fs")
-const path = require('path');
+const crypto = require("crypto")
 
-const imageFormats = require("../config/fileFormats.json").image
+/*
+CREDIT
+*/
 
 /*
 CREDIT - Encrpt a buffer given a key and encryption algorithm (or default to aes-256-ctr)
@@ -40,115 +40,9 @@ async function genRandom32BitKey(){
     return key
 }
 
-async function encryptImage(filepath, newFileDir) {
-    try{
-        filepath = String(filepath)
-
-        if(!fs.existsSync(filepath) || !fs.existsSync(newFileDir)){
-            return undefined
-        }
-    
-        let isImageFile = false
-        for(let i = 0; i < imageFormats.length; i++){
-            if(filepath.includes(imageFormats[i])){
-                isImageFile = true
-                break
-            }
-        }
-    
-        if(!isImageFile){
-            return undefined
-        }
-    
-        let filePathSplit = filepath.split("/")
-        const newFileName = `encrypted_${filePathSplit[filePathSplit.length-1]}`
-        const newFilePath = path.join(newFileDir, newFileName);
-    
-        const key = await genRandom32BitKey()
-    
-        const ogImage = fs.readFileSync(filepath)
-        const encryptFile = await encrypt(ogImage, key)
-    
-        fs.writeFileSync(newFilePath, encryptFile)
-    
-        return {
-            "filepath": newFilePath,
-            "key": key
-        }
-
-    } catch(e) {
-        return undefined
-    }
-}
-
-async function decryptImage(filepath, newFileDir, key) {
-    try{
-        filepath = String(filepath)
-
-        if(!filepath.includes("encrypted_")){
-            return undefined
-        }
-    
-        if(!fs.existsSync(filepath) || !fs.existsSync(newFileDir)){
-            return undefined
-        }
-    
-        const encryptFile = fs.readFileSync(filepath)
-    
-        let filePathSplit = filepath.split("/")
-        let newFileName = "decrpt_" + filePathSplit[filePathSplit.length-1].replace("encrypted_", "")
-        const newFilePath = path.join(newFileDir, newFileName);
-
-        const decryptFile = await decrypt(encryptFile, key)
-
-        fs.writeFileSync(newFilePath, decryptFile)
-
-        return newFilePath
-        
-    } catch(e){
-        return undefined
-    }
-}
-
-async function deleteFile(filepath){
-    filepath = String(filepath)
-
-    if(fs.existsSync(filepath)){
-        try {
-            fs.unlinkSync(filepath)
-        } catch(err) {
-            // failed to delete file
-        }
-        return true
-    }
-
-    return false
-}
-
-async function test_encryptImage_decryptImage(filepath, to){
-    let e = await encryptImage(filepath, to)
-    if(e){
-        console.log("E:", JSON.stringify(e))
-        let d = await decryptImage(e.filepath, to, e.key)
-        console.log()
-        console.log("D:", JSON.stringify(d))
-        if(d){
-            let dfe = await deleteFile(e.filepath)
-            console.log("\nDFE:", dfe)
-        }
-    }
-    return
-}
-
-// const filepath = "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/img_0868.jpg"
-// const to = "/Users/mehmet/Desktop/NEAR-DEV/ln-researcher/controllers/"
-// test_encryptImage_decryptImage(filepath, to).then()
-
 module.exports = {
     encrypt,
     decrypt,
-    encryptImage,
-    decryptImage,
-    deleteFile
+    genRandom32BitKey
 }
 

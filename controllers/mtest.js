@@ -50,8 +50,6 @@ async function main(){
             Buffer.from(imageKey, "base64")
         ).toString("base64")
 
-        console.log(key)
-
         const dImage = await fileCryt.decrypt(Buffer.from(eImage, "base64"), key)
 
         fs.writeFileSync("./meme.jpg", dImage)
@@ -61,3 +59,53 @@ async function main(){
 }
 
 main().then()
+
+
+
+
+// async function apiTestImageEndpoint() {
+//     const id = "26fc9ae1-4a56-483a-82d7-b7f40478042b"
+//     const username = "user25.near"
+  
+//     const user = scTestData.testUsers[username]
+//     const publicKey = user.public
+//     const privateKey = user.private
+  
+//     const verifiableData = username
+  
+//     let signature = crypto.sign("sha256", Buffer.from(verifiableData), {
+//       key: privateKey,
+//       padding: crypto.constants.RSA_PKCS1_PSS_PADDING,
+//     });
+  
+//     signature = signature.toString("base64")
+  
+//     const payload = {
+//       "id": id,
+//       "username": username,
+//       "signature": signature
+//     }
+  
+//     const axiosConfig = {
+//         url: "http://localhost:3000/image/",
+//         method: "post",
+//         data: payload,
+//         headers: Object.assign({"Content-Type": "application/json"}, {})
+//     }
+
+//     let response = undefined
+  
+//     try {
+//         response = await axios.request(axiosConfig)
+//     } catch(err) {
+//         console.log(err)
+//     }
+
+//     if(response === undefined){
+//         return false
+//     }
+
+//     const result = response.data
+
+//     return true
+//   }

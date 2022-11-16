@@ -99,44 +99,35 @@ async function getImage(req, res) {
         return res.status(500).send(`The 'physical' data for ID ${dataID} does not exist in the server`)
     }
 
-    // NEW - BE CAREFUL!
+    let eData = undefined
 
-    const imageEncrypted = await fileCrypto.encryptImage(filepath, __dirname)
-    const newImagePath = imageEncrypted.filepath
-    let newImageKey = imageEncrypted.key
+    try{
+        const fileKey = await fileCrypto.genRandom32BitKey()
+        eData = await fileCrypto.encrypt(fs.readFileSync(filepath), fileKey)
 
-    console.log("1)",newImageKey)
+        newImageKey = crypto.publicEncrypt(
+            {
+                key: userPubKey,
+                padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+                oaepHash: "sha256",
+            },
+            Buffer.from(fileKey, "base64")
+        )
+        
+    } catch(e) {
+        logger.fatal(`${nameForLog} Request failed for payload ${JSON.stringify(req.body)} because the following error occurred well trying to encrypt the image and/or key: ${e}`)
+        return res.status(500).send(`Error occurred well trying to process the response for data id ${dataID}`)
+    } 
 
-    newImageKey = crypto.publicEncrypt(
-        {
-            key: userPubKey,
-            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-            oaepHash: "sha256",
-        },
-        Buffer.from(newImageKey, "base64")
-    )
-
-    const content = fs.readFileSync(newImagePath).toString("base64")
+    const content = eData.toString("base64")
 
     const description = fs.readFileSync(config.labelDescriptionPath, 'utf8');
 
-    // usedSignatures.push(signature)
-    // let dbOut = await db.editImageData(filepath, { usedSignatures: usedSignatures }, { filepath: filepath })
-    // logger.info(`${nameForLog} added a new signature to the local db: ${JSON.stringify(dbOut)}`)
+    usedSignatures.push(signature)
+    let dbOut = await db.editImageData(filepath, { usedSignatures: usedSignatures }, { filepath: filepath })
+    logger.info(`${nameForLog} added a new signature to the local db: ${JSON.stringify(dbOut)}`)
 
-    // logger.info(`${nameForLog} File ${filepath} was sent out to requester with payload: ${JSON.stringify(req.body)}`)
-    // return res.sendFile(newImagePath, { 
-    //     headers: {
-    //         description: description,
-    //         imagekey: newImageKey.toString("base64")
-    //     },
-    //     lastModified: false
-    // })
-
-    await util.sleep(10*1000)
-
-    const rmJob = await fileCrypto.deleteFile(newImagePath)
-    console.log("rmJob:", rmJob)
+    logger.info(`${nameForLog} File ${filepath} was sent out to requester with payload: ${JSON.stringify(req.body)}`)
 
     return res.writeHead(200, {
         "Content-type": "image/jpg",
