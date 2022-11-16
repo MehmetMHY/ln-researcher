@@ -8,4 +8,5 @@
 
 ## Notes:
 - This project uses the layout discussed on this amazing article: https://dev.to/nermineslimane/how-to-structure-your-express-and-nodejs-project-3bl
+- Citing code correctly: https://integrity.mit.edu/handbook/writing-code
 

@@ -37,4 +37,4 @@ https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 https://axios-http.com/docs/req_config
 https://stackoverflow.com/questions/55458239/naming-convention-for-environment-variables-files
 https://www.geeksforgeeks.org/how-to-access-variables-from-another-file-using-javascript/
-
+https://integrity.mit.edu/handbook/writing-code

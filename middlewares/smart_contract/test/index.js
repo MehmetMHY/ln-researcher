@@ -7,22 +7,19 @@ const logger = require("../../../utils/logger")
 const testDataFileName = "testSmartContractTestData.json"
 
 /*
-CREDIT FOR NOUNS/NOUNS.JSON VARIABLE/FILE
-- Date:     11-4-2022
-- Sources:
-    - https://gist.github.com/peterdemin/920ec3eaaa0a9f3cafd3a855557f5e0c
-    - https://gist.github.com/pcgeek86/78f4cad29dd16961ceeeee654127a0db
-    - https://gist.github.com/atduskgreg/3cf8ef48cb0d29cf151bedad81553a54
-    - https://www.vocabulary.com/lists/189583#view=list
-- About:    dataset of some common english nouns
+CREDIT - A json dataset of some common english nouns
+This dataset was built from various sources:
+    - 11-4-2022 : https://gist.github.com/peterdemin/920ec3eaaa0a9f3cafd3a855557f5e0c
+    - 11-4-2022 : https://gist.github.com/pcgeek86/78f4cad29dd16961ceeeee654127a0db
+    - 11-4-2022 : https://gist.github.com/atduskgreg/3cf8ef48cb0d29cf151bedad81553a54
+    - 11-4-2022 : https://www.vocabulary.com/lists/189583#view=list
 */
 const nouns = require("./nouns.json").data
 
 /*
-CREDIT FOR GETRSAKEYS() FUNCTION
-- Date:     11-4-2022
-- Source:   https://www.geeksforgeeks.org/node-js-crypto-generatekeypair-method/
-- About:    create a pair of RSA keys (public and private)
+CREDIT - A function that generates and returns a RSA key pair (public & private keys):
+This function was taken directly and modified from GeeksForGeeks' online article:
+    - 11-4-2022 : https://www.geeksforgeeks.org/node-js-crypto-generatekeypair-method/
 */
 async function getRSAKeys(){
     const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
@@ -41,11 +38,9 @@ async function currectEpoch(){
 }
 
 /*
-CREDIT FOR RANDOMNUMBER() FUNCTION
-- Date:     11-5-2022
-- Source:   https://stackoverflow.com/questions/17726753/get-a-random-number-between-0-0200-and-0-120-float-numbers
-- User:     Alesanco
-- About:    return a random number based on a set setting
+CREDIT - A function that creates a random number in a defined range
+This one-line function body was taken directly from Alesanco Stackoverflow post:
+    - 11-5-2022 : https://stackoverflow.com/questions/17726753/get-a-random-number-between-0-0200-and-0-120-float-numbers
 */
 async function randomNumber(places, start, end){
     return parseFloat((Math.random() * (start - end) + end).toFixed(places))
@@ -100,11 +95,9 @@ async function genPoints(numOfLabels, totalPointsRange, xRange, yRange){
 }
 
 /*
-CREDIT FOR SHUFFLE() FUNCTION
-- Date:     11-6-2022
-- Source:   https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-- User:     coolaj86
-- About:    shuffle/mix-up an array
+CREDIT - Shuffle an array
+This function was taken directory from coolaj86's Stackoverflow post:
+    - 11-6-2022 : https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 */
 async function shuffle(array) {
     let currentIndex = array.length,  randomIndex;
