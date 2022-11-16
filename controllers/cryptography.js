@@ -1,5 +1,6 @@
 const crypto = require("crypto");
 const fs = require("fs")
+const path = require('path');
 
 const imageFormats = require("../config/fileFormats.json").image
 
@@ -39,11 +40,11 @@ async function genRandom32BitKey(){
     return key
 }
 
-async function encryptImage(filepath) {
+async function encryptImage(filepath, newFileDir) {
     try{
         filepath = String(filepath)
 
-        if(!fs.existsSync(filepath)){
+        if(!fs.existsSync(filepath) || !fs.existsSync(newFileDir)){
             return undefined
         }
     
@@ -59,50 +60,51 @@ async function encryptImage(filepath) {
             return undefined
         }
     
-        let filepathsplit = filepath.split("/")
-        filepathsplit[filepathsplit.length-1] = `${filepathsplit[filepathsplit.length-1]}.encrypted`
-        let newFilepath = filepathsplit.join("/")
+        let filePathSplit = filepath.split("/")
+        const newFileName = `encrypted_${filePathSplit[filePathSplit.length-1]}`
+        const newFilePath = path.join(newFileDir, newFileName);
     
         const key = await genRandom32BitKey()
     
         const ogImage = fs.readFileSync(filepath)
         const encryptFile = await encrypt(ogImage, key)
     
-        fs.writeFileSync(newFilepath, encryptFile)
+        fs.writeFileSync(newFilePath, encryptFile)
     
         return {
-            "filepath": newFilepath,
+            "filepath": newFilePath,
             "key": key
         }
+
     } catch(e) {
         return undefined
     }
 }
 
-async function decryptImage(filepath, key) {
+async function decryptImage(filepath, newFileDir, key) {
     try{
         filepath = String(filepath)
 
-        if(!filepath.includes(".encrypted")){
+        if(!filepath.includes("encrypted_")){
             return undefined
         }
     
-        if(!fs.existsSync(filepath)){
+        if(!fs.existsSync(filepath) || !fs.existsSync(newFileDir)){
             return undefined
         }
     
         const encryptFile = fs.readFileSync(filepath)
     
-        let filepathsplit = filepath.split("/")
-        filepathsplit[filepathsplit.length-1] = filepathsplit[filepathsplit.length-1].replace(".encrypted", "")
-        filepathsplit[filepathsplit.length-1] = "decrpt_" + filepathsplit[filepathsplit.length-1]
-        let newFilepath = filepathsplit.join("/")
+        let filePathSplit = filepath.split("/")
+        let newFileName = "decrpt_" + filePathSplit[filePathSplit.length-1].replace("encrypted_", "")
+        const newFilePath = path.join(newFileDir, newFileName);
 
         const decryptFile = await decrypt(encryptFile, key)
 
-        fs.writeFileSync(newFilepath, decryptFile)
+        fs.writeFileSync(newFilePath, decryptFile)
 
-        return newFilepath
+        return newFilePath
+        
     } catch(e){
         return undefined
     }
@@ -123,26 +125,30 @@ async function deleteFile(filepath){
     return false
 }
 
-async function main(){
-    const filepath = "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/img_0868.jpg"
-    let e = await encryptImage(filepath)
-    // if(e){
-    //     console.log("E:", JSON.stringify(e))
-    //     let d = await decryptImage(e.filepath, e.key)
-    //     console.log("D:", JSON.stringify(d))
-    //     if(d){
-    //         let dfe = await deleteFile(e.filepath)
-    //         console.log("\nDFE:", dfe)
-    //     }
-    // }
+async function test_encryptImage_decryptImage(filepath, to){
+    let e = await encryptImage(filepath, to)
+    if(e){
+        console.log("E:", JSON.stringify(e))
+        let d = await decryptImage(e.filepath, to, e.key)
+        console.log()
+        console.log("D:", JSON.stringify(d))
+        if(d){
+            let dfe = await deleteFile(e.filepath)
+            console.log("\nDFE:", dfe)
+        }
+    }
     return
 }
-main().then()
+
+// const filepath = "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/img_0868.jpg"
+// const to = "/Users/mehmet/Desktop/NEAR-DEV/ln-researcher/controllers/"
+// test_encryptImage_decryptImage(filepath, to).then()
 
 module.exports = {
     encrypt,
     decrypt,
     encryptImage,
-    decryptImage
+    decryptImage,
+    deleteFile
 }
 

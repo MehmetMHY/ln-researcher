@@ -1,12 +1,12 @@
-const moment = require("moment")
-const crypto = require("crypto");
-const fs = require("fs");
+const crypto = require("crypto")
+const fs = require("fs")
 const smartContract = require("../middlewares/db_manager/scTalker")
 const db = require("../middlewares/database/db")
 const logger = require("../utils/logger")
 const util = require("../utils/util")
-const config = require("../config/config.json")
+const fileCrypto = require("./cryptography")
 
+const config = require("../config/config.json")
 const payloadSchema = require("../models/apiImagePayload").imgEndpoint
 
 const nameForLog = `[SUPPLY-IMAGE]`
@@ -97,21 +97,52 @@ async function getImage(req, res) {
     if (!fs.existsSync(filepath) || !fs.existsSync(config.labelDescriptionPath)){
         logger.fatal(`${nameForLog} Request failed for payload ${JSON.stringify(req.body)} because the file ${filepath} and/or ${config.labelDescriptionPath} does not exist. The admin(s) MOST address this.`)
         return res.status(500).send(`The 'physical' data for ID ${dataID} does not exist in the server`)
-    } 
+    }
+
+    // NEW - BE CAREFUL!
+
+    const imageEncrypted = await fileCrypto.encryptImage(filepath, __dirname)
+    const newImagePath = imageEncrypted.filepath
+    let newImageKey = imageEncrypted.key
+
+    console.log("1)",newImageKey)
+
+    newImageKey = crypto.publicEncrypt(
+        {
+            key: userPubKey,
+            padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: "sha256",
+        },
+        Buffer.from(newImageKey, "base64")
+    )
+
+    const content = fs.readFileSync(newImagePath).toString("base64")
 
     const description = fs.readFileSync(config.labelDescriptionPath, 'utf8');
 
-    usedSignatures.push(signature)
-    let dbOut = await db.editImageData(filepath, { usedSignatures: usedSignatures }, { filepath: filepath })
-    logger.info(`${nameForLog} added a new signature to the local db: ${JSON.stringify(dbOut)}`)
+    // usedSignatures.push(signature)
+    // let dbOut = await db.editImageData(filepath, { usedSignatures: usedSignatures }, { filepath: filepath })
+    // logger.info(`${nameForLog} added a new signature to the local db: ${JSON.stringify(dbOut)}`)
 
-    logger.info(`${nameForLog} File ${filepath} was sent out to requester with payload: ${req.body}`)
-    return res.sendFile(filepath, { 
-        headers: {
-            description: description
-        },
-        lastModified: false
-    })
+    // logger.info(`${nameForLog} File ${filepath} was sent out to requester with payload: ${JSON.stringify(req.body)}`)
+    // return res.sendFile(newImagePath, { 
+    //     headers: {
+    //         description: description,
+    //         imagekey: newImageKey.toString("base64")
+    //     },
+    //     lastModified: false
+    // })
+
+    await util.sleep(10*1000)
+
+    const rmJob = await fileCrypto.deleteFile(newImagePath)
+    console.log("rmJob:", rmJob)
+
+    return res.writeHead(200, {
+        "Content-type": "image/jpg",
+        "description": description,
+        "imagekey": newImageKey.toString("base64")
+    }).end(content)
 }
 
 module.exports = {
