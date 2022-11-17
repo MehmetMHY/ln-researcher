@@ -6,7 +6,7 @@ const logger = require("../utils/logger")
 const util = require("../utils/util")
 const fileCrypto = require("./cryptography")
 
-const config = require("../config/config.json")
+const userConfig = require("../config/userConfig.json")
 const payloadSchema = require("../models/apiImagePayload").imgEndpoint
 
 const nameForLog = `[SUPPLY-IMAGE]`
@@ -94,8 +94,8 @@ async function getImage(req, res) {
         return res.status(410).send(`ID ${dataID} was sent out for user ${username} before and there for is no longer available`)
     }
 
-    if (!fs.existsSync(filepath) || !fs.existsSync(config.labelDescriptionPath)){
-        logger.fatal(`${nameForLog} Request failed for payload ${JSON.stringify(req.body)} because the file ${filepath} and/or ${config.labelDescriptionPath} does not exist. The admin(s) MOST address this.`)
+    if (!fs.existsSync(filepath) || !fs.existsSync(userConfig.labelDescriptionPath)){
+        logger.fatal(`${nameForLog} Request failed for payload ${JSON.stringify(req.body)} because the file ${filepath} and/or ${userConfig.labelDescriptionPath} does not exist. The admin(s) MOST address this.`)
         return res.status(500).send(`The 'physical' data for ID ${dataID} does not exist in the server`)
     }
 
@@ -121,11 +121,11 @@ async function getImage(req, res) {
 
     const content = eData.toString("base64")
 
-    const description = fs.readFileSync(config.labelDescriptionPath, 'utf8');
+    const description = fs.readFileSync(userConfig.labelDescriptionPath, 'utf8');
 
     usedSignatures.push(signature)
     let dbOut = await db.editImageData(filepath, { usedSignatures: usedSignatures }, { filepath: filepath })
-    logger.info(`${nameForLog} added a new signature to the local db: ${JSON.stringify(dbOut)}`)
+    logger.info(`${nameForLog} Added a new signature to the local db: ${JSON.stringify(dbOut)}`)
 
     logger.info(`${nameForLog} File ${filepath} was sent out to requester with payload: ${JSON.stringify(req.body)}`)
 
