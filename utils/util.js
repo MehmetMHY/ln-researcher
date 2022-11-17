@@ -1,6 +1,8 @@
 const Ajv = require("ajv")
 const logger = require("./logger")
+const request = require("./request")
 
+const config = require("../config/config.json")
 const ajv = new Ajv()
 
 async function schemaValidate(schema, data){
@@ -22,8 +24,27 @@ function sleep(ms) {
     return new Promise((resolve) => { setTimeout(resolve, ms) });
 }
 
+async function nearCurrentPriceUSD(){
+    try{
+        const url = config.currentNearPriceEndpoint
+        const response = await request.get(url)
+
+        if(response.status === 0){
+            return response.response.near.usd
+        } else {
+            logger.error(`Failed to get current price of NEAR from ${config.currentNearPriceEndpoint} due to request failing: ${JSON.stringify(response)}`)
+        }
+
+    }catch(e){
+        logger.error(`Failed to get the current price of NEAR from ${config.currentNearPriceEndpoint} due to the following error: ${e}`)
+    }
+
+    return undefined
+}
+
 module.exports = {
     schemaValidate,
     cleanPrint,
-    sleep
+    sleep,
+    nearCurrentPriceUSD
 }
