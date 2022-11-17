@@ -89,7 +89,6 @@ async function displayState(){
     
         console.log(`⌛ Average Complete Time: ${avgCompletedTime} millisecond(s)`)
     
-        console.log(fullyPrinted)
         if(!fullyPrinted){
             console.log("🛑 ERROR OCCURRED SO KEY INFORMATION(S) ARE MISSING; CHECK THE LOG(S)!")
             logger.error(`${nameForLog} Failed to fully display all the current information because some errors occurred`)
