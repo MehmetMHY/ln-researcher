@@ -38,10 +38,16 @@ const NUM_REVIEWS = 3;
 
 @NearBindgen({})
 class JobPosting {
+  url: string = "";
   funds: string = "0";
   available_jobs: Job[] = [];
   in_progress_jobs: Job[] = [];
   completed_jobs: Job[] = [];
+
+  @call({})
+  set_url({ url }: { url: string }) {
+    this.url = url;
+  }
 
   /**
    * Adds funds for job rewards to the smart contract
@@ -194,7 +200,7 @@ class JobPosting {
    * @returns {Task | string} assigned task or error message
    */
   @call({})
-  request_task(): { id: string; task: Task } | string {
+  request_task(): { url: string; id: string; task: Task } | string {
     if (this.available_jobs.length === 0) {
       return "error: no available jobs";
     }
@@ -239,7 +245,7 @@ class JobPosting {
 
     job.tasks.push(task);
     this.in_progress_jobs.push(job);
-    return { id: job.id, task: task };
+    return { url: this.url, id: job.id, task: task };
   }
 
   @call({})
