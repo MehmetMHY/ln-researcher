@@ -232,7 +232,7 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             userCounter += 1
         }
 
-        entry["ranking"] = await shuffle(lUsers)
+        entry["final_ranking"] = await shuffle(lUsers)
 
         const numOfLabelTopics = await randomNumber(0, imgLabelRange[0], imgLabelRange[1])
 
