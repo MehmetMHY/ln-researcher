@@ -135,6 +135,7 @@ class JobPosting {
       if (job) {
         this.available_jobs = this.available_jobs.filter((job) => job.id != id);
         canceled_jobs.push(job.id);
+        this.send_near(near.predecessorAccountId(), BigInt(job.reward));
       } else {
         errors.push(job.id);
       }
