@@ -35,6 +35,7 @@ const STORAGE_LIMIT: bigint = BigInt(1000000000000000000000000); // 1 NEAR
 const MIN_REWARD: bigint = BigInt(1000000000000000000000000); // 1 NEAR
 const NUM_LABELS = 3;
 const NUM_REVIEWS = 3;
+const REQUEST_FEE = BigInt(10000000000000000000000000); // 10 NEAR
 
 @NearBindgen({})
 class JobPosting {
@@ -199,8 +200,13 @@ class JobPosting {
    * Request a task, will assign a label or review, depending on what is needed
    * @returns {Task | string} assigned task or error message
    */
-  @call({})
+  @call({ payableFunction: true })
   request_task(): { url: string; id: string; task: Task } | string {
+    if (near.attachedDeposit() < REQUEST_FEE) {
+      this.send_near(near.predecessorAccountId(), near.attachedDeposit());
+      return "error: insufficient funds";
+    }
+
     if (this.available_jobs.length === 0) {
       return "error: no available jobs";
     }
