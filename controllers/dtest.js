@@ -1,7 +1,4 @@
-const crypto = require("crypto");
-const axios = require("axios")
 const db = require("../middlewares/database/db")
-const scTestData = require("../middlewares/smart_contract/test/testSmartContractTestData.json")
 
 async function apiResetDBEntryTool(){
     const filepath = "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/img_0012.jpg"
