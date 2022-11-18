@@ -28,9 +28,10 @@ interface Task {
   data?: any;
 }
 
-const SECONDS_PER_MONTH: bigint = BigInt(2592000); // (30 days)
+const NANOSECONDS_PER_HOUR = BigInt(3600000000000);
 
 // placeholder configuration
+const TIME_LIMIT = NANOSECONDS_PER_HOUR;
 const STORAGE_LIMIT: bigint = BigInt(1000000000000000000000000); // 1 NEAR
 const MIN_REWARD: bigint = BigInt(1000000000000000000000000); // 1 NEAR
 const NUM_LABELS = 3;
@@ -100,7 +101,7 @@ class JobPosting {
       return "error: insufficient funds provided";
     }
 
-    const expires = near.blockTimestamp() + SECONDS_PER_MONTH;
+    const expires = near.blockTimestamp() + TIME_LIMIT;
 
     ids.map((id) => {
       this.available_jobs.push({
@@ -134,6 +135,7 @@ class JobPosting {
       if (job) {
         this.available_jobs = this.available_jobs.filter((job) => job.id != id);
         canceled_jobs.push(job.id);
+        this.send_near(near.predecessorAccountId(), BigInt(job.reward));
       } else {
         errors.push(job.id);
       }
