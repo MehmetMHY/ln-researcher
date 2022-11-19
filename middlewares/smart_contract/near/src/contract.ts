@@ -46,6 +46,11 @@ class JobPosting {
   in_progress_jobs: Job[] = [];
   completed_jobs: Job[] = [];
 
+  @view({})
+  get_url(): string {
+    return this.url;
+  }
+
   @call({})
   set_url({ url }: { url: string }) {
     this.url = url;
