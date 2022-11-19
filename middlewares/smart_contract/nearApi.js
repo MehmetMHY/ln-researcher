@@ -1,6 +1,7 @@
 const os = require("os")
 const logger = require("../../utils/logger")
 const nearAPI = require("near-api-js");
+const { utils } = nearAPI;
 
 const CREDENTIALS_DIR = ".near-credentials";
 
@@ -69,8 +70,8 @@ async function sendTokens(sender, receiver, amount){
     }
     
     try {
-        amount = await nearsValueConvert(amount, "yocto") // convert near to yoctoNEAR
         amount = amount.toLocaleString('fullwide', {useGrouping:false})
+        amount = utils.format.parseNearAmount(amount) // convert near to yoctoNEAR
 
         sender = String(sender)
         receiver = String(receiver)
