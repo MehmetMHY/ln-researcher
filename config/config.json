@@ -18,5 +18,16 @@
         "retries": 1,
         "retryDelay": 1000
     },
-    "currentNearPriceEndpoint": "https://api.coingecko.com/api/v3/simple/price?ids=near&vs_currencies=usd&precision=full"
+    "currentNearPriceEndpoint": "https://api.coingecko.com/api/v3/simple/price?ids=near&vs_currencies=usd&precision=full",
+    "smartContract": {
+        "connectionConfig": {
+            "networkId": "testnet",
+            "nodeUrl": "https://rpc.testnet.near.org",
+            "walletUrl": "https://wallet.testnet.near.org",
+            "helperUrl": "https://helper.testnet.near.org",
+            "explorerUrl": "https://explorer.testnet.near.org"
+        },
+        "mainAccount": "memetime.testnet",
+        "scAccount": "dev-1668330613590-55460358134907"
+    }
 }

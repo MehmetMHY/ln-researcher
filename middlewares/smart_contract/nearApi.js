@@ -1,27 +1,22 @@
+// All credit goes to: https://docs.near.org/tools/near-api-js/quick-reference
+
+const child_process = require('child_process')
+const fs = require("fs")
 const os = require("os")
-const logger = require("../../utils/logger")
+const path = require("path")
 const nearAPI = require("near-api-js");
 const { utils } = nearAPI
+
+const logger = require("../../utils/logger")
 const request = require("../../utils/request")
-const path = require("path")
-const fs = require("fs")
-const child_process = require('child_process')
 
-const CREDENTIALS_DIR = ".near-credentials";
+const config = require("../../config/config.json").smartContract
+const credentialsPath = path.join(os.homedir(), ".near-credentials") // look for keys in $HOME/.near-credentials (default)
 
-const credentialsPath = path.join(os.homedir(), CREDENTIALS_DIR)
 const myKeyStore = new nearAPI.keyStores.UnencryptedFileSystemKeyStore(credentialsPath);
+const connectionConfig = Object.assign({keyStore: myKeyStore}, config.connectionConfig)
 
 const nameForLog = `[nearApi]`
-
-const connectionConfig = {
-    networkId: "testnet",
-    keyStore: myKeyStore, // first create a key store 
-    nodeUrl: "https://rpc.testnet.near.org",
-    walletUrl: "https://wallet.testnet.near.org",
-    helperUrl: "https://helper.testnet.near.org",
-    explorerUrl: "https://explorer.testnet.near.org"
-}
 
 // get account balance for a stated NEAR account
 async function getAccountBalance(accountName){
@@ -39,6 +34,7 @@ async function getAccountBalance(accountName){
     return output
 }
 
+// send tokens to a stated NEAR account
 async function sendTokens(sender, receiver, amount){
     const status = { 
         status: false, 
@@ -142,7 +138,9 @@ async function callFunction(requester, contract, method, arguments, deposit){
     }
 }
 
-// middle main functions are below this line
+/////////////////////////////////////////////////////
+//// middle main functions are below these lines ////
+/////////////////////////////////////////////////////
 
 async function getDB(contract, id=undefined) {
     let arguments = {}
@@ -150,8 +148,6 @@ async function getDB(contract, id=undefined) {
     if(id){
         arguments = {"ids": [String(id)]}
     }
-
-    // arguments = JSON.stringify(arguments)
 
     const response = viewFunction(undefined, contract, "get_jobs", arguments)
 
@@ -311,23 +307,18 @@ async function scBuildDeploy(){
     return output
 }
 
-// Ⓝ NEAR Token(s)
-const account1 = "dev-1668330613590-55460358134907"
-const account2 = "memetime.testnet"
-const account3 = "dev-1668330613590-55460358134907"
-// sendTokens(account2, account1, 1).then(result=>console.log(JSON.stringify(result,null,indent=4)))
-// viewFunction(account2, account1, "get_jobs", {}).then(result=>console.log(result))
-// callFunction(account2, account1, "add_funds", {}, 2).then(result=>console.log(result))
-// viewFunction(account2, account1, "get_available_funds", {}).then(result=>console.log(result))
-// >>>-------------<<<>>>-------------<<<>>>-------------<<<>>>-------------<<<>>>-------------<<< ///
-// viewFunction(account2, account1, "get_available_funds", {}).then(result=>console.log(utils.format.formatNearAmount(result.toLocaleString('fullwide', {useGrouping:false}))))
-// addFunds(account2, account3, 1).then(result => console.log(JSON.stringify(result,null,indent=2)))
-// getAvailableFunds(account3).then(result=>console.log(utils.format.formatNearAmount(result.toLocaleString('fullwide', {useGrouping:false}))))
-// getDB(account1).then(result=>console.log(JSON.stringify(result,null,indent=4)))
-// addJobs(account1, ["409a-a3db-34740b0142cf", "4286-9a87-0396a177a8df"]).then(result=>console.log(JSON.stringify(result,null,indent=4)))
-// cancelJobs(account1, ["409a-a3db-34740b0142cf", "4286-9a87-0396a177a8df"]).then(result=>console.log(JSON.stringify(result,null,indent=4)))
-// getStatus(account1, "available").then(result=>console.log(JSON.stringify(result,null,indent=4)))
-// setURL(account3, "http://localhost:3000", "health").then(result=>console.log(result))
-// getURL(account3).then(result=>console.log(result))
-
-scBuildDeploy().then(result=>console.log(result))
+module.exports = {
+    getAccountBalance,
+    sendTokens,
+    viewFunction,
+    callFunction,
+    getDB,
+    addFunds,
+    getAvailableFunds,
+    addJobs,
+    cancelJobs,
+    getStatus,
+    setURL,
+    getURL,
+    scBuildDeploy
+}
