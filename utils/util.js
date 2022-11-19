@@ -1,6 +1,5 @@
 const Ajv = require("ajv")
 const logger = require("./logger")
-const os = require('child_process')
 const request = require("./request")
 
 const config = require("../config/config.json")
@@ -43,21 +42,9 @@ async function nearCurrentPriceUSD(){
     return undefined
 }
 
-async function runCmd(cmd) {
-    const output = { status: 0, output: {} }
-    try { 
-        output.output = os.execSync(String(cmd)).toString('utf8')
-    } catch (err) {
-        logger.error(`Failed to run command ${cmd} in ${runCmd.name} due to the follow error(s): ${err}`)
-        output.status = 1
-    }
-    return output
-}
-
 module.exports = {
     schemaValidate,
     cleanPrint,
     sleep,
-    nearCurrentPriceUSD,
-    runCmd
+    nearCurrentPriceUSD
 }
