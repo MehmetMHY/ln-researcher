@@ -358,7 +358,7 @@ async function requestTask(scAccount, labelerAccount) {
     return output
 }
 
-// 
+// recall a certain job for a certain user after it's past it's expiration
 async function recallTask(contract, job_id, assigned_to) {
     const output = { status: 0, output: undefined }
     
