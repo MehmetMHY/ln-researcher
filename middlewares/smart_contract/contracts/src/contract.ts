@@ -202,6 +202,8 @@ class JobPosting {
     assigned_to: string;
   }): string | undefined {
     const job = this.in_progress_jobs.find((job) => job.id === job_id);
+    near.log(job);
+
     if (BigInt(job.expires) < near.blockTimestamp()) {
       return "error: job is not expired";
     }
@@ -213,6 +215,7 @@ class JobPosting {
       (task) => task.assigned_to === assigned_to
     );
     job.tasks = job.tasks.filter((task) => task != to_recall);
+    near.log(job);
     this.available_jobs.push(job);
   }
 
@@ -402,15 +405,5 @@ class JobPosting {
     });
 
     return candidates;
-  }
-
-  /**
-   * delete all jobs stored in the contract, can only be called by the account to which the contract is deployed
-   */
-  @call({ privateFunction: true })
-  clear_all_jobs(): void {
-    this.available_jobs = [];
-    this.in_progress_jobs = [];
-    this.completed_jobs = [];
   }
 }
