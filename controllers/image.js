@@ -1,11 +1,13 @@
 const crypto = require("crypto")
 const fs = require("fs")
-const smartContract = require("../middlewares/db_manager/scTalker")
+// const smartContract = require("../middlewares/db_manager/scTalker")
+const smartContract = require("../middlewares/smart_contract/nearApi")
 const db = require("../middlewares/database/db")
 const logger = require("../utils/logger")
 const util = require("../utils/util")
 const fileCrypto = require("./cryptography")
 
+const scConfig = require("../config/config.json").smartContract
 const userConfig = require("../config/userConfig.json")
 const payloadSchema = require("../models/apiImagePayload").imgEndpoint
 
@@ -33,25 +35,26 @@ async function getImage(req, res) {
 
     const filepath = dbImageData[0].filepath
 
-    let scTestMode = false
-    if(process.env.SCTEST){
-        scTestMode = true
-    }
+    // Smart Contract Talks (start)
 
-    const smartContractData = await smartContract.getState(scTestMode)
+    const smartContractData = await smartContract.getDB(scConfig.scAccount) // json of all jobs currently in the smart contract
+    const scCompletedJobs = await smartContract.getStatus(scConfig.scAccount, "completed") // json of all completed jobs in the smart contract
 
     const scFoundEntries = smartContractData.filter(obj => obj.id === dataID)
-
     if(scFoundEntries.length === 0){
         logger.info(`${nameForLog} Request failed for payload ${JSON.stringify(req.body)} because the payload's ID is not in the smart contract`)
         return res.status(400).send(`ID ${dataID} is not in the smart contract`)
     }
 
-    const scEntry = scFoundEntries[0]
-    if(scEntry.status === "completed"){
+    const scCompletedFinds = scCompletedJobs.filter(obj => obj.id === dataID)
+    if(scCompletedFinds.length !== 0){
         logger.info(`${nameForLog} Request failed for payload ${JSON.stringify(req.body)} because the job for ${dataID} has already been completed`)
         return res.status(400).send(`The job for ${dataID} has already been completed`)
     }
+
+    // Smart Contract Talks (end)
+
+    const scEntry = scFoundEntries[0]
 
     let labelers = {}
     for(let i = 0; i < scEntry.tasks.length; i++){

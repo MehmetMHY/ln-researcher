@@ -4,16 +4,16 @@ const axios = require("axios")
 const fileCryt = require("./cryptography")
 const fs = require("fs")
 
-const scTestData = require("../middlewares/smart_contract/test/testSmartContractTestData.json")
+const scTestData = require("./mkeys.json")
 
 async function main(){
-    const id = "41dd387e-2deb-4a1e-93d4-34bc42e5fea9"
-    const username = "user25.near"
+    const id = "f371783c-ac05-4efb-96db-104006933d58"
+    const username = "memetime.testnet"
 
     const url = "http://localhost:3000/image/"
     const finalImgFilePath = `./img_${moment().unix()}.jpg`
-    const publicKey = scTestData["testUsers"][username]["public"]
-    const privateKey = scTestData["testUsers"][username]["private"]
+    const publicKey = scTestData["public"]
+    const privateKey = scTestData["private"]
 
     let signature = crypto.sign("sha256", Buffer.from(username), {
         key: privateKey,
