@@ -143,14 +143,12 @@ async function cleanDB(){
 
 async function apiLocalRunning(){
     const localhostURL = `http://localhost:${process.env.PORT}/health`
-    
     const response = await request.get(localhostURL)
-
-    if (response.status === 0) {
-        return true
-    } else {
-        return false
+    const output = { url: localhostURL, response: response, up: true }
+    if(response.status !== 0){
+        output.up = false
     }
+    return output
 }
 
 async function scGetAllData(){
