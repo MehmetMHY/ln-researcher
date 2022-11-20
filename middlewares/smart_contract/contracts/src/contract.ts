@@ -137,6 +137,10 @@ class JobPosting {
    */
   @call({ privateFunction: true })
   cancel_jobs({ ids }: { ids: string[] }): string {
+    if (!this.available_jobs.length) {
+      return "error: no jobs that can be cancelled";
+    }
+
     const canceled_jobs = [];
     const errors = [];
     ids.map((id) => {
