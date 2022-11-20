@@ -213,7 +213,15 @@ class JobPosting {
    * @returns {Task | string} assigned task or error message
    */
   @call({ payableFunction: true })
-  request_task(): { url: string; id: string; task: Task } | string {
+  request_task({
+    rsa_pk,
+  }: {
+    rsa_pk: string;
+  }): { url: string; id: string; task: Task } | string {
+    if (!rsa_pk) {
+      return "error: must provide rsa public key";
+    }
+
     if (near.attachedDeposit() < REQUEST_FEE) {
       this.send_near(near.predecessorAccountId(), near.attachedDeposit());
       return "error: insufficient funds";
@@ -258,7 +266,7 @@ class JobPosting {
       type: task_type,
       assigned_to: near.predecessorAccountId(),
       time_assigned: near.blockTimestamp().toString(),
-      public_key: near.signerAccountPk(),
+      public_key: rsa_pk,
     };
 
     job.tasks.push(task);
