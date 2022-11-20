@@ -38,3 +38,17 @@ https://axios-http.com/docs/req_config
 https://stackoverflow.com/questions/55458239/naming-convention-for-environment-variables-files
 https://www.geeksforgeeks.org/how-to-access-variables-from-another-file-using-javascript/
 https://integrity.mit.edu/handbook/writing-code
+https://docs.near.org/tools/near-api-js/quick-reference
+https://docs.near.org/develop/contracts/security/one-yocto
+https://stackabuse.com/executing-shell-commands-with-node-js/
+https://docs.near.org/tools/near-cli#near-add-key
+https://nodejs.org/api/child_process.html
+https://stackoverflow.com/questions/4482686/check-synchronously-if-file-directory-exists-in-node-js
+https://expressjs.com/en/api.html#res.sendFile
+https://www.youtube.com/watch?v=3a9S3wubxLw
+https://nodejs.org/api/buffer.html#static-method-bufferfromstring-encoding
+https://medium.com/@anned20/encrypting-files-with-nodejs-a54a0736a50a
+https://stackoverflow.com/questions/28834835/readfile-in-base64-nodejs
+https://nodejs.dev/en/learn/reading-files-with-nodejs/
+https://melvingeorge.me/blog/convert-string-buffer-nodejs
+https://stackoverflow.com/questions/8750780/encrypting-data-with-a-public-key-in-node-js
