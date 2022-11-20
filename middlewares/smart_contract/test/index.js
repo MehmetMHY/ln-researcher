@@ -156,6 +156,8 @@ function ceilAll(array){
 async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabelRange, pointRange){
     const filepath = `${__dirname}/${testDataFileName}`
 
+    let rewardRangeBackup = rewardRange
+
     jobCountRange = ceilAll(jobCountRange)
     imageResolution = ceilAll(imageResolution)
     rewardRange = ceilAll(rewardRange)
@@ -178,6 +180,8 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
         }
     })
 
+    rewardRange = rewardRangeBackup
+
     const inputSettings = {
         "jobCountRange": jobCountRange,
         "imageResolution": imageResolution,
@@ -191,7 +195,6 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
     // important, hard set, variables. double check theses variables
     const statusOptions = [ "available", "in_progress", "completed" ]
     const uniqUserCountTotal = 3 * 2
-    const oneMonthSeconds = 30 * 24 * 60 * 60
 
     const currectTime = await currectEpoch()
 
@@ -215,11 +218,12 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
         let entry = {
             id: ids[i],
             status: "",
-            reward: (await randomNumber(4, rewardRange[0], rewardRange[1])).toLocaleString('fullwide', {useGrouping:false}),
-            expires: ((currectTime + oneMonthSeconds) * Math.pow(10,6)).toLocaleString('fullwide', {useGrouping:false}),
             ranking: [],
             tasks: []
         }
+
+        entry["reward"] = await randomNumber(4, rewardRange[0]*Math.pow(10,24), rewardRange[1]*Math.pow(10,24)) // in yNear
+        entry["reward"] = entry["reward"].toLocaleString('fullwide', {useGrouping:false})
 
         let lUsers = []
         let rUsers = []
@@ -236,29 +240,36 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
 
         const numOfLabelTopics = await randomNumber(0, imgLabelRange[0], imgLabelRange[1])
 
+        entry["expires"] = (currectTime + (60*60)) * Math.pow(10,9)
+        entry["expires"] = entry["expires"].toLocaleString('fullwide', {useGrouping:false})
+
         for(let j = 0; j < lUsers.length; j++){
             let tmpKeys = await getRSAKeys()
             userTable[lUsers[j]] = tmpKeys
+            let started = (await randomNumber(2, currectTime, currectTime + (60*5))) * Math.pow(10, 9)
+            let ended = (await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))) * Math.pow(10, 9)
             entry.tasks.push({
                 type: "label",
                 assigned_to: lUsers[j],
                 public_key: tmpKeys.public,
                 data: await genPoints(numOfLabelTopics, [pointRange[0], pointRange[1]], [0, width], [0, height]),
-                "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
-                "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
+                "time_assigned": started.toLocaleString('fullwide', {useGrouping:false}),
+                "time_submitted": ended.toLocaleString('fullwide', {useGrouping:false})
             })
         }
 
         for(let j = 0; j < rUsers.length; j++){
             let tmpKeys = await getRSAKeys()
             userTable[rUsers[j]] = tmpKeys
+            let started = (await randomNumber(2, currectTime, currectTime + (60*5))) * Math.pow(10, 9)
+            let ended = (await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))) * Math.pow(10, 9)
             entry.tasks.push({
                 type: "review",
                 asigned_to: rUsers[j],
                 public_key: tmpKeys.public,
                 data: await shuffle(lUsers),
-                "timed-assigned": await randomNumber(2, currectTime, currectTime + (60*5)),
-                "time-submitted": await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))
+                "time_assigned": started.toLocaleString('fullwide', {useGrouping:false}),
+                "time_submitted": ended.toLocaleString('fullwide', {useGrouping:false})
             })
         }
 
