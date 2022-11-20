@@ -39,6 +39,11 @@ async function getImage(req, res) {
     const smartContractData = await smartContract.getDB(scConfig.scAccount) // json of all jobs currently in the smart contract
     const scCompletedJobs = await smartContract.getStatus(scConfig.scAccount, "completed") // json of all completed jobs in the smart contract
 
+    if(!smartContractData || !scCompletedJobs){
+        logger.fatal(`${nameForLog} Failed to get data from smart contract: smartContractData = ${JSON.stringify(smartContractData)} & scCompletedJobs = ${JSON.stringify(scCompletedJobs)}`)
+        return res.status(500).send(`Failed to get proper response from smart contract. API endpoint down.`)
+    }
+
     const scFoundEntries = smartContractData.filter(obj => obj.id === dataID)
     if(scFoundEntries.length === 0){
         logger.info(`${nameForLog} Request failed for payload ${JSON.stringify(req.body)} because the payload's ID is not in the smart contract`)
