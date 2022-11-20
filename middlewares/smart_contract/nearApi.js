@@ -9,6 +9,7 @@ const { utils } = nearAPI
 
 const logger = require("../../utils/logger")
 const request = require("../../utils/request")
+const rsaGen = require("./test/index")
 
 const config = require("../../config/config.json").smartContract
 const credentialsPath = path.join(os.homedir(), ".near-credentials") // look for keys in $HOME/.near-credentials (default)
@@ -104,7 +105,7 @@ async function viewFunction(requester, contract, method, arguments){
         return undefined
     }
 }
-
+// const response = await callFunction(labelerAccount, scAccount, "request_task", { "rsa_pk": publicKey }, currentRequestFee)
 async function callFunction(requester, contract, method, arguments, deposit){
     const params = {
         "requester": requester,
@@ -323,6 +324,39 @@ async function scBuildDeploy(){
     return output
 }
 
+// the researcher does not really need this function but it's good for testing
+async function requestTask(scAccount, labelerAccount) {
+    const output = { status: 0, output: undefined }
+
+    try {
+        let currentRequestFee = await viewFunction(labelerAccount, scAccount, "get_request_fee", {})
+        currentRequestFee = utils.format.formatNearAmount((1.1 * currentRequestFee).toLocaleString('fullwide', {useGrouping:false})) // muliply by 1.1 to avoid werid float errors
+    
+        const rsaKeyPair = await rsaGen.getRSAKeys()
+        const publicKey = rsaKeyPair.public
+    
+        const response = await callFunction(labelerAccount, scAccount, "request_task", { "rsa_pk": publicKey }, currentRequestFee)
+    
+        if(!response){
+            output.status = 1
+            output.output = response
+            return output
+        }
+    
+        output.output = {
+            "fee": currentRequestFee,
+            "keys": rsaKeyPair,
+            "response": response
+        }
+
+    } catch(err) {
+        logger.error(`${requestTask.name} failed to request for a task for account ${labelerAccount} smart contract ${scAccount} due to the following error: ${err}`)
+        output.status = 1
+    }
+
+    return output
+}
+
 module.exports = {
     getAccountBalance,
     sendTokens,
@@ -337,5 +371,6 @@ module.exports = {
     setURL,
     getURL,
     scBuildDeploy,
-    returnFunds
+    returnFunds,
+    requestTask
 }

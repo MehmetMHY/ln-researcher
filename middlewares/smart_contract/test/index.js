@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+const crypto = require("crypto")
 const db = require("../../database/db")
 const moment = require("moment")
 const fs = require('fs');
@@ -318,5 +318,6 @@ async function getTestData(){
 
 module.exports = {
     genTestData,
-    getTestData
+    getTestData,
+    getRSAKeys
 }
