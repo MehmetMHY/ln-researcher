@@ -118,4 +118,5 @@ build
 neardev
 testSmartContractTestData.json
 controllers/test/mkeys.json
+controllers/test/img_*
 
