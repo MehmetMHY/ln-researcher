@@ -1,7 +1,11 @@
 const moment = require("moment")
 const logger = require("../utils/logger")
 
+const nameForLog = `[HEALTH_ENDPOINT]`
+
 async function healthCheckup(req, res) {
+    logger.info(`${nameForLog} [http v${req.httpVersion}] ${req.method} request was made to endpoint ${req.originalUrl} with header(s) ${JSON.stringify(req.rawHeaders)}`)
+
     try {
         const time = moment.utc()
 
