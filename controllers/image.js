@@ -1,6 +1,5 @@
 const crypto = require("crypto")
 const fs = require("fs")
-// const smartContract = require("../middlewares/db_manager/scTalker")
 const smartContract = require("../middlewares/smart_contract/nearApi")
 const db = require("../middlewares/database/db")
 const logger = require("../utils/logger")
