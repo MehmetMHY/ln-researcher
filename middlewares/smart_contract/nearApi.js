@@ -169,6 +169,21 @@ async function addFunds(from, to, amount) {
     return output
 }
 
+async function returnFunds(contract, recipient) {
+    const output = { status: 0, output: undefined }
+
+    const response = await callFunction(contract, contract, "return_funds", { "recipient": recipient }, undefined)
+
+    if(!response){
+        output.status = 1
+        output.output = response
+        return output
+    }
+
+    output.output = response
+    return output
+}
+
 async function getAvailableFunds(contract) {
     return viewFunction(undefined, contract, "get_available_funds", arguments)
 }
@@ -249,6 +264,7 @@ async function getURL(contract) {
     return viewFunction(undefined, contract, "get_url", {})
 }
 
+// (11-19-2022) warning : this function should not be used for the final product but it works for testing
 async function scBuildDeploy(){
     const output = { status: 1, output: {} }
     
@@ -320,5 +336,6 @@ module.exports = {
     getStatus,
     setURL,
     getURL,
-    scBuildDeploy
+    scBuildDeploy,
+    returnFunds
 }
