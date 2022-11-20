@@ -189,7 +189,7 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
     logger.info(`Creating the researcher's smart contract test data to ${filepath} with the following settings: ${JSON.stringify(inputSettings)}`)
 
     // important, hard set, variables. double check theses variables
-    const statusOptions = ["waiting", "pending", "completed"]
+    const statusOptions = [ "available", "in_progress", "completed" ]
     const uniqUserCountTotal = 3 * 2
     const oneMonthSeconds = 30 * 24 * 60 * 60
 
@@ -215,8 +215,8 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
         let entry = {
             id: ids[i],
             status: "",
-            reward: await randomNumber(4, rewardRange[0], rewardRange[1]),
-            expires: currectTime + oneMonthSeconds,
+            reward: (await randomNumber(4, rewardRange[0], rewardRange[1])).toLocaleString('fullwide', {useGrouping:false}),
+            expires: ((currectTime + oneMonthSeconds) * Math.pow(10,6)).toLocaleString('fullwide', {useGrouping:false}),
             ranking: [],
             tasks: []
         }
@@ -267,13 +267,13 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
 
         if(waitings > 0){
             entry.tasks = []
-            entry.ranking = []
+            entry.final_ranking = []
             entry.status = statusOptions[0]
             waitings -= 1
         } 
         else if(pendings > 0){
             entry.tasks = entry.tasks.slice(0, await randomNumber(0, 1, 2))
-            entry.ranking = []
+            entry.final_ranking = []
             entry.status = statusOptions[1]
             pendings -= 1
         }
@@ -285,6 +285,11 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
         allFakeData.push(entry)
     }
 
+    const finalAllFakeData = {}
+    statusOptions.forEach(function(element){
+        finalAllFakeData[element] = allFakeData.filter(obj => obj.status === element)
+    })
+
     const fileOutput = {
         "metadata": {
             "function": genTestData.name,
@@ -292,7 +297,7 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             "filepath": filepath,
             "created": currectTime
         },
-        "output": allFakeData,
+        "output": finalAllFakeData,
         "testUsers": userTable,
     }
 
