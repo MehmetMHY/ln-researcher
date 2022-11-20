@@ -200,8 +200,12 @@ class JobPosting {
   }: {
     job_id: string;
     assigned_to: string;
-  }): void {
+  }): string | undefined {
     const job = this.in_progress_jobs.find((job) => job.id === job_id);
+    if (BigInt(job.expires) < near.blockTimestamp()) {
+      return "error: job is not expired";
+    }
+
     this.in_progress_jobs = this.in_progress_jobs.filter(
       (ip_job) => ip_job != job
     );
