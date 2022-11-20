@@ -5,7 +5,7 @@ const fs = require("fs")
 const os = require("os")
 const path = require("path")
 const nearAPI = require("near-api-js");
-const { utils } = nearAPI
+const { connect, KeyPair, keyStores, utils, providers } = nearAPI
 
 const logger = require("../../utils/logger")
 const request = require("../../utils/request")
@@ -105,6 +105,7 @@ async function viewFunction(requester, contract, method, arguments){
         return undefined
     }
 }
+
 // const response = await callFunction(labelerAccount, scAccount, "request_task", { "rsa_pk": publicKey }, currentRequestFee)
 async function callFunction(requester, contract, method, arguments, deposit){
     const params = {
@@ -139,9 +140,9 @@ async function callFunction(requester, contract, method, arguments, deposit){
     }
 }
 
-/////////////////////////////////////////////////////
-//// middle main functions are below these lines ////
-/////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+//// middle^2 main functions are below these lines ////
+///////////////////////////////////////////////////////
 
 async function getDB(contract, id=undefined) {
     let arguments = {}
@@ -357,6 +358,22 @@ async function requestTask(scAccount, labelerAccount) {
     return output
 }
 
+// 
+async function recallTask(contract, job_id, assigned_to) {
+    const output = { status: 0, output: undefined }
+    
+    const response = await callFunction(contract, contract, "recall_task", { "job_id": String(job_id), "assigned_to": String(assigned_to) }, undefined)
+
+    if(!response){
+        output.status = 1
+        output.output = response
+        return output
+    }
+
+    output.output = response
+    return output
+}
+
 module.exports = {
     getAccountBalance,
     sendTokens,
@@ -372,5 +389,7 @@ module.exports = {
     getURL,
     scBuildDeploy,
     returnFunds,
-    requestTask
+    requestTask,
+    recallTask
 }
+
