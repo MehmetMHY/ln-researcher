@@ -75,6 +75,11 @@ class JobPosting {
     return this.funds;
   }
 
+  @call({ privateFunction: true })
+  return_funds({ recipient }: { recipient: string }): void {
+    this.send_near(recipient, BigInt(this.funds));
+    this.funds = "0";
+  }
   /**
    * Send the specified amount of near tokens to the specified account
    * @param {string} account_id account to send the tokens to
@@ -140,7 +145,7 @@ class JobPosting {
       if (job) {
         this.available_jobs = this.available_jobs.filter((job) => job.id != id);
         canceled_jobs.push(job.id);
-        this.send_near(near.predecessorAccountId(), BigInt(job.reward));
+        this.funds = (BigInt(this.funds) + BigInt(job.reward)).toString();
       } else {
         errors.push(job.id);
       }
