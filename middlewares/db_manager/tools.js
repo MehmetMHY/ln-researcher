@@ -1,15 +1,13 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('path')
+const fs = require('fs')
 const db = require("../database/db")
 const logger = require("../../utils/logger")
-const { v4: uuidv4 } = require('uuid');
 const moment = require("moment")
 const request = require("../../utils/request")
+const smartContract = require("../smart_contract/nearApi")
 
 const config = require("../../config/config.json")
-
 const imgFormats = require("../../config/fileFormats.json").image
-
 const dirPath = config.dataDirPath
 
 async function getFilesInDir(dirPath){
@@ -147,7 +145,7 @@ async function apiLocalRunning(){
     const localhostURL = `http://localhost:${process.env.PORT}/health`
     
     const response = await request.get(localhostURL)
-    
+
     if (response.status === 0) {
         return true
     } else {
@@ -155,10 +153,39 @@ async function apiLocalRunning(){
     }
 }
 
+async function scGetAllData(){
+    const scAccount = config.smartContract.scAccount
+    const allData = await smartContract.getDB(scAccount)
+    const allAvailable = await smartContract.getStatus(scAccount, "available")
+    const allInProgress = await smartContract.getStatus(scAccount, "in_progress")
+    const allCompleted = await smartContract.getStatus(scAccount, "completed")
+
+    let complete = false
+    if(allData && allAvailable && allInProgress && allCompleted){
+        complete = true
+    }
+
+    return {
+        complete: complete,
+        all: allData,
+        types: {
+            available: allAvailable,
+            in_progress: allInProgress,
+            completed: allCompleted
+        }
+    }
+}
+
+async function nsCurrentEpoch(){
+    return moment().valueOf()*Math.pow(10,6) // this is not perfect but it works
+}
+
 module.exports = {
     getFilesInDir,
     getImgsInDir,
     addAllToDB,
     cleanDB,
-    apiLocalRunning
+    apiLocalRunning,
+    nsCurrentEpoch,
+    scGetAllData
 }

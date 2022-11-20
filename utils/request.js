@@ -1,5 +1,5 @@
 const axios = require('axios');
-const util = require("./util")
+const logger = require("../utils/logger")
 
 const config = require("../config/config.json").requesterConfig
 
@@ -23,6 +23,7 @@ async function get(url, headers={}) {
     let attempt = 0
     while(true){
         if (attempt > config.retries) {
+            logger.fatal(`Gave up on GET request to url ${url} with ${JSON.stringify(headers)} after ${config.retries} retries`)
             output["status"] = 1
             break
         }
@@ -36,6 +37,7 @@ async function get(url, headers={}) {
             }
             break
         } catch(err) {
+            logger.error(`Failed to make GET request to url ${url} with header ${JSON.stringify(headers)} due to the following error: ${err}`)
             await sleep(config.retryDelay)
         }
         
