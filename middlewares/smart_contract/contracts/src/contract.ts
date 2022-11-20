@@ -208,6 +208,11 @@ class JobPosting {
     this.available_jobs.push(job);
   }
 
+  @view({})
+  get_request_fee(): string {
+    return REQUEST_FEE.toString();
+  }
+
   /**
    * Request a task, will assign a label or review, depending on what is needed
    * @returns {Task | string} assigned task or error message
