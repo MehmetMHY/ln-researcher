@@ -117,5 +117,5 @@ assets/data/*
 build
 neardev
 testSmartContractTestData.json
-controllers/mkeys.json
+controllers/test/mkeys.json
 

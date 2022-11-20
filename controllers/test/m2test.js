@@ -1,7 +1,7 @@
 const moment = require("moment")
 const crypto = require("crypto")
 const axios = require("axios")
-const fileCryt = require("./cryptography")
+const fileCryt = require("../cryptography")
 const fs = require("fs")
 
 const scTestData = require("./mkeys.json")

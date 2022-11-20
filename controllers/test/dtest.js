@@ -1,4 +1,4 @@
-const db = require("../middlewares/database/db")
+const db = require("../../middlewares/database/db")
 
 async function apiResetDBEntryTool(id, clearUsed){
     const entries = await db.getImageData({ "id": id })
