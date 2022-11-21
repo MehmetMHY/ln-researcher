@@ -11,8 +11,9 @@
     - (optional) https://www.docker.com/products/docker-desktop/
 - (optional) Check out Postgres's Docker Hub page:
     - https://hub.docker.com/_/postgres
+- I recommend using Docker Desktop for easily starting and ending the Postgres docker container.
 
-## Setup Postgres Database For LN-Researcher:
+## Setup and get running Postgres Database For LN-Researcher:
 ```
 # pull offiical docker image for postgres:
 docker pull postgres
@@ -20,7 +21,7 @@ docker pull postgres
 # install, setup, and run postgres docker container:
 docker run --name ln-researcher-db -e POSTGRES_PASSWORD=password -d -p 5432:5432 
 
-# list all running docker containers:
+# list all running docker container (grab the CONTAINER ID):
 docker ps
 
 # exec into docker container though bash:
@@ -46,8 +47,10 @@ data=# \q
 
 # [inside container] exist docker container terminal:
 root@678c1fcf608b:/# exit
+```
 
+## Disable/Turn-Off the Postgres Database For LN-Researcher:
+```
 # stop running docker container:
 docker stop 678c1fcf608b
 ```
-

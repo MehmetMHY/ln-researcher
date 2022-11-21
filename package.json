@@ -17,7 +17,7 @@
     "type": "git",
     "url": "git+https://github.com/MehmetMHY/near-label-data-hosting.git"
   },
-  "author": "Mehmet Yilmaz",
+  "author": "Mehmet Yilmaz & Dylan Eck",
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/MehmetMHY/near-label-data-hosting/issues"
