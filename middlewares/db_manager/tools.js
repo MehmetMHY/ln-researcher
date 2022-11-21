@@ -6,6 +6,8 @@ const moment = require("moment")
 const request = require("../../utils/request")
 const smartContract = require("../smart_contract/nearApi")
 
+const testData = require("../smart_contract/test/testSmartContractTestData.json").output
+
 const config = require("../../config/config.json")
 const imgFormats = require("../../config/fileFormats.json").image
 const dirPath = config.dataDirPath
@@ -178,6 +180,19 @@ async function nsCurrentEpoch(){
     return moment().valueOf()*Math.pow(10,6) // this is not perfect but it works
 }
 
+async function scTestData(){
+    const output = {
+        complete: true,
+        all: testData["available"].concat(testData["in_progress"], testData["completed"]),
+        types: {
+            available: testData["available"],
+            in_progress: testData["in_progress"],
+            completed: testData["completed"]
+        }
+    }
+    return output
+}
+
 module.exports = {
     getFilesInDir,
     getImgsInDir,
@@ -185,5 +200,6 @@ module.exports = {
     cleanDB,
     apiLocalRunning,
     nsCurrentEpoch,
-    scGetAllData
+    scGetAllData,
+    scTestData
 }

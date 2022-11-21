@@ -28,11 +28,12 @@
         },
         "mainAccount": "memetime.testnet",
         "scAccount": "dev-1669005331131-34888993730110",
-        "maxJobsPerRound": 10
+        "maxJobsPerRound": 10,
+        "paymentPerImageNEAR": 0.1
     },
 
     "dataDirPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/",
     "whatToLabel": ["maize"],
     "labelDescriptionPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/description.txt",
-    "paymentPerImageNEAR": 0.1
+    "managerPauseTimeSeconds": 10
 }

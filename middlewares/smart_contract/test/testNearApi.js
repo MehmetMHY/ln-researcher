@@ -14,7 +14,7 @@ async function fundAdd(){
     const before = await smartContract.getAvailableFunds(scAccount)
     console.log("Balance Before:", before)
 
-    const output = await smartContract.addFunds(mainAccount, scAccount, 20)
+    const output = await smartContract.addFunds(mainAccount, scAccount, 1)
     console.log(`\nOUTPUT: ${JSON.stringify(output,null,indent=4)} \n`)
 
     const after = await smartContract.getAvailableFunds(scAccount)
@@ -60,8 +60,8 @@ async function taskRequest() {
 ///// RANDOMS:
 // smartContract.recallTask(scAccount, "4615dfd3-98c6-40b3-971f-073449f05faa", mainAccount).then()
 
-printDB().then()
+// printDB().then()
 
-// fundAdd().then()
+fundAdd().then()
 // jobsAdd().then()
 // taskRequest().then()
