@@ -1,6 +1,5 @@
 {
     "logfile": "/tmp/ln_researcher.log",
-    "dataDirPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/",
     "postgres": {
         "connection": {
             "user": "postgres",
@@ -28,6 +27,12 @@
             "explorerUrl": "https://explorer.testnet.near.org"
         },
         "mainAccount": "memetime.testnet",
-        "scAccount": "dev-1668920651111-84606440529857"
-    }
+        "scAccount": "dev-1668920651111-84606440529857",
+        "maxJobsPerRound": 10
+    },
+    
+    "dataDirPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/",
+    "whatToLabel": ["maize"],
+    "labelDescriptionPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/description.txt",
+    "paymentPerImageNEAR": 0.1
 }

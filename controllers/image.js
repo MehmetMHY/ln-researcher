@@ -7,7 +7,7 @@ const util = require("../utils/util")
 const fileCrypto = require("./cryptography")
 
 const scConfig = require("../config/config.json").smartContract
-const userConfig = require("../config/userConfig.json")
+const userConfig = require("../config/config.json")
 const payloadSchema = require("../models/apiImagePayload").imgEndpoint
 
 const nameForLog = `[SUPPLY-IMAGE]`

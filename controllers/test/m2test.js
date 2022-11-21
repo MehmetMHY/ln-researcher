@@ -58,6 +58,14 @@ async function main(){
         const dImage = await fileCryt.decrypt(Buffer.from(eImage, "base64"), key)
 
         fs.writeFileSync(finalImgFilePath, dImage)
+        
+        // print data stored in the header
+        console.log("IMAGEKEY:")
+        console.log("---------")
+        console.log(`${imageKey} \n`)
+        console.log("DESCRIPTION:")
+        console.log("------------")
+        console.log(`${description} \n`)
     }
 
     return
