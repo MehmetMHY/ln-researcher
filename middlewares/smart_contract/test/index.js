@@ -265,7 +265,7 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
             let ended = (await randomNumber(2, currectTime + (60*5), currectTime + (2*60*5))) * Math.pow(10, 9)
             entry.tasks.push({
                 type: "review",
-                asigned_to: rUsers[j],
+                assigned_to: rUsers[j],
                 public_key: tmpKeys.public,
                 data: await shuffle(lUsers),
                 "time_assigned": started.toLocaleString('fullwide', {useGrouping:false}),
