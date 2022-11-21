@@ -34,12 +34,10 @@ interface JobDescription {
   label_keys: string[];
 }
 
-const NANOSECONDS_PER_HOUR = BigInt(3600000000000);
-
 // placeholder configuration
-const TIME_LIMIT = NANOSECONDS_PER_HOUR;
-const STORAGE_LIMIT: bigint = BigInt(1000000000000000000000000); // 1 NEAR
-const MIN_REWARD: bigint = BigInt(1000000000000000000000000); // 1 NEAR
+const TIME_LIMIT = BigInt(3600000000000); // 1 hour in nanoseconds - WARNING : important variable be careful
+const STORAGE_LIMIT: bigint = BigInt(5000000000000000000000000); // 5.0 NEAR
+const MIN_REWARD: bigint = BigInt(80000000000000000000000); // 0.08 NEAR
 const NUM_LABELS = 3;
 const NUM_REVIEWS = 3;
 const REQUEST_FEE = BigInt(10000000000000000000000000); // 10 NEAR
@@ -216,7 +214,7 @@ class JobPosting {
 
     if (
       near.blockTimestamp() - BigInt(to_recall.time_assigned) <
-      NANOSECONDS_PER_HOUR
+      TIME_LIMIT
     ) {
       return "error: task is not expired";
     }

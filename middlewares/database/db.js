@@ -137,9 +137,43 @@ async function editImageData(filepath, keyValue, targets){
     return -2
 }
 
+async function overriseImageData(target, newValue){
+    const params = { "target": target, "newValue": newValue }
+
+    console.log(newValue)
+
+    const validNewValue = await util.schemaValidate(dbEntrySchema, newValue)
+
+    const validTarget = await util.schemaValidate({ type: "object" }, target)
+
+    console.log(validNewValue, validTarget)
+
+    if(validNewValue && validTarget){
+        const currentEntries = await postgusDB.get(target)
+        
+        if(currentEntries.status === 0 && currentEntries.result && currentEntries.result.length === 1){
+            const dbOutput = await postgusDB.override(target, newValue)
+            
+            if(dbOutput.status === 0){
+                logger.info(`Successfully overided db entry ${JSON.stringify(params)}. Response: ${JSON.stringify(dbOutput)}`)
+                return 0
+            }
+            
+            logger.info(`Failed to overided db entry ${JSON.stringify(params)}. Response: ${JSON.stringify(dbOutput)}`)
+            return -1
+        }
+
+        logger.error(`Failed to overide image db entry for ${JSON.stringify(params)} because the entry does not exist in the db or there is more then one copy in the db: ${JSON.stringify(currentEntries)}`)
+    }
+
+    logger.error(`Failed to overide image db entry for ${JSON.stringify(params)} because params keyValue and/or targets are formated incorrectly`)
+    return -2
+}
+
 module.exports = {
     addImageData,
     deleteImageData,
     getImageData,
-    editImageData
+    editImageData,
+    overriseImageData
 }

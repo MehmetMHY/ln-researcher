@@ -1,6 +1,7 @@
 const imgMetaData = {
     type: "object",
     properties: {
+        id: { type: "string" },
         filepath: { type: "string" },
         status: { enum: ["waiting", "pending", "completed"] },
         cost: { type: "number" },

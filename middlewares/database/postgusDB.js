@@ -7,7 +7,7 @@ async function validTargetType(value){
     return !(typeof(value) !== 'object' || Array.isArray(value) || value === null)
 }
 
-async function jsonToAndStaement(targets){
+async function jsonToAndStatement(targets){
     let reTargets = ""
     let counter = 0
     for ( let key of Object.keys(targets) ) {
@@ -59,7 +59,7 @@ async function get(targets=undefined){
             return output
         }
     
-        let reTargets = await jsonToAndStaement(targets)
+        let reTargets = await jsonToAndStatement(targets)
         sqlCmd = `SELECT * FROM images WHERE ${reTargets}`
     }
 
@@ -87,7 +87,7 @@ async function remove(targets=undefined){
         return output
     }
 
-    const reTargets = await jsonToAndStaement(targets)
+    const reTargets = await jsonToAndStatement(targets)
     const sqlCmd = `DELETE FROM images WHERE ${reTargets}`
 
     try {
@@ -114,9 +114,29 @@ async function edit(key, newValue, targets){
 
     const strKey = String(key)
     const strNewValue = JSON.stringify(newValue)
-    const reTargets = await jsonToAndStaement(targets)
+    const reTargets = await jsonToAndStatement(targets)
 
     const sqlCmd = `UPDATE images SET data = JSONB_SET(data, '{${strKey}}', '${strNewValue}') WHERE ${reTargets}`
+
+    try {
+        const pool = new Pool(config.postgres.connection)
+        const result = await pool.query(sqlCmd)
+        await pool.end()
+        output["result"] = result
+    } catch(e) {
+        output["status"] = -1
+        output["errors"].push(`${e}`)
+    }
+
+    return output
+}
+
+async function override(targets, newValue){
+    const output = { "status": 0, "errors": [], "result": [] }
+    
+    const reTargets = await jsonToAndStatement(targets)
+
+    const sqlCmd = `UPDATE images SET data = '${JSON.stringify(newValue)}' WHERE ${reTargets}`
 
     try {
         const pool = new Pool(config.postgres.connection)
@@ -136,5 +156,6 @@ module.exports = {
     add,
     edit,
     remove,
-    validTargetType
+    validTargetType,
+    override
 }
