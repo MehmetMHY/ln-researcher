@@ -218,7 +218,6 @@ async function genTestData(jobCountRange, imageResolution, rewardRange, imgLabel
         let entry = {
             id: ids[i],
             status: "",
-            ranking: [],
             tasks: []
         }
 

@@ -422,4 +422,12 @@ class JobPosting {
 
     return candidates;
   }
+
+  /**
+   * delete all completed jobs stored in the contract, can only be called by the account to which the contract is deployed
+   */
+  @call({ privateFunction: true })
+  clear_completed_jobs(): void {
+    this.completed_jobs = [];
+  }
 }

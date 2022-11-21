@@ -386,6 +386,23 @@ async function recallTask(contract, job_id, assigned_to) {
     return output
 }
 
+// recall a certain job for a certain user after it's past it's expiration
+async function clearCompleted(contract) {
+    const output = { status: 0, output: undefined }
+    
+    const response = await callFunction(contract, contract, "clear_completed_jobs", {}, undefined)
+
+    if(response === false || String(response).toLowerCase().includes("error")){
+        output.status = 1
+        output.output = response
+        return output
+    }
+
+    output.output = response
+
+    return output
+}
+
 module.exports = {
     getAccountBalance,
     sendTokens,
@@ -402,6 +419,8 @@ module.exports = {
     scBuildDeploy,
     returnFunds,
     requestTask,
-    recallTask
+    recallTask,
+    clearCompleted
 }
 
+clearCompleted(config.scAccount).then(result=>console.log(JSON.stringify(result,null,indent=4)))
