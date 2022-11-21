@@ -140,13 +140,9 @@ async function editImageData(filepath, keyValue, targets){
 async function overriseImageData(target, newValue){
     const params = { "target": target, "newValue": newValue }
 
-    console.log(newValue)
-
     const validNewValue = await util.schemaValidate(dbEntrySchema, newValue)
 
     const validTarget = await util.schemaValidate({ type: "object" }, target)
-
-    console.log(validNewValue, validTarget)
 
     if(validNewValue && validTarget){
         const currentEntries = await postgusDB.get(target)
