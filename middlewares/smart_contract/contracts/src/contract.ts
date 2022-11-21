@@ -254,6 +254,8 @@ class JobPosting {
       return "error: insufficient funds";
     }
 
+    this.send_near(near.predecessorAccountId(), near.attachedDeposit());
+
     if (this.available_jobs.length === 0) {
       return "error: no available jobs";
     }
