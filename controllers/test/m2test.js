@@ -5,10 +5,11 @@ const fileCryt = require("../cryptography")
 const fs = require("fs")
 
 const scTestData = require("./mkeys.json")
+const config = require("../../config/config.json")
 
 async function main(){
     const id = "4615dfd3-98c6-40b3-971f-073449f05faa"
-    const username = "memetime.testnet"
+    const username = config.smartContract.mainAccount
 
     const url = "http://localhost:3000/image/"
     const finalImgFilePath = `./img_${moment().unix()}.jpg`

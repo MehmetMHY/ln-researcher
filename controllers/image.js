@@ -128,7 +128,8 @@ async function getImage(req, res) {
 
     const content = eData.toString("base64")
 
-    const description = fs.readFileSync(userConfig.labelDescriptionPath, 'utf8');
+    let description = fs.readFileSync(userConfig.labelDescriptionPath, 'utf8')
+    description = String(description).replace(/\r?\n|\r/g, "") // remove weird characters to prevent header error
 
     usedSignatures.push(signature)
     let dbOut = await db.editImageData(filepath, { usedSignatures: usedSignatures }, { filepath: filepath })
