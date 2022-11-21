@@ -100,12 +100,11 @@ async function viewFunction(requester, contract, method, arguments){
         })
 
         logger.info(`${nameForLog} ${viewFunction.name} was provided with params ${JSON.stringify(params)} and the smart contract returned the following (translated) response: ${providers.getTransactionLastResult(response)}`)
-    
         return response
 
     } catch(err) {
         logger.error(`${nameForLog} Failed to ${viewFunction.name}, with params ${JSON.stringify(params)}, due to the following error: ${err}`)
-        return undefined
+        return false
     }
 }
 
@@ -136,12 +135,11 @@ async function callFunction(requester, contract, method, arguments, deposit){
         })
 
         logger.info(`${nameForLog} ${callFunction.name} was provided with params ${JSON.stringify(params)} and the smart contract returned the following (translated) response: ${providers.getTransactionLastResult(response)}`)
-    
         return providers.getTransactionLastResult(response)
 
     } catch(err) {
         logger.error(`${nameForLog} Failed to ${callFunction.name}, with params ${JSON.stringify(params)}, due to the following error: ${err}`)
-        return undefined
+        return false
     }
 }
 
@@ -166,7 +164,7 @@ async function addFunds(from, to, amount) {
 
     const response = await callFunction(from, to, "add_funds", {}, amount)
 
-    if(!response || String(response).toLowerCase().includes("error")){
+    if(response === false || String(response).toLowerCase().includes("error")){
         output.status = 1
         output.output = response
         return output
@@ -181,7 +179,7 @@ async function returnFunds(contract, recipient) {
 
     const response = await callFunction(contract, contract, "return_funds", { "recipient": recipient }, undefined)
 
-    if(!response || String(response).toLowerCase().includes("error")){
+    if(!response === false || String(response).toLowerCase().includes("error")){
         output.status = 1
         output.output = response
         return output
@@ -200,7 +198,7 @@ async function addJobs(contract, jobs) {
 
     const response = await callFunction(contract, contract, "add_jobs", { "ids": jobs }, undefined)
 
-    if(!response || String(response).toLowerCase().includes("error")){
+    if(response === false || String(response).toLowerCase().includes("error")){
         output.status = 1
         output.output = response
         return output
@@ -215,7 +213,7 @@ async function cancelJobs(contract, jobs) {
 
     const response = await callFunction(contract, contract, "cancel_jobs", { "ids": jobs }, undefined)
 
-    if(!response || String(response).toLowerCase().includes("error")){
+    if(response === false || String(response).toLowerCase().includes("error")){
         output.status = 1
         output.output = response
         return output
@@ -257,7 +255,7 @@ async function setURL(contract, urlRoot, endpoint=undefined) {
 
     const response = await callFunction(contract, contract, "set_url", { "url": url }, undefined)
 
-    if(!response || String(response).toLowerCase().includes("error")){
+    if(response === false || String(response).toLowerCase().includes("error")){
         output.status = 1
         output.output = response
         return output
@@ -343,7 +341,7 @@ async function requestTask(scAccount, labelerAccount) {
     
         const response = await callFunction(labelerAccount, scAccount, "request_task", { "rsa_pk": publicKey }, currentRequestFee)
     
-        if(!response || String(response).toLowerCase().includes("error")){
+        if(response === false || String(response).toLowerCase().includes("error")){
             output.status = 1
             output.output = response
             return output
@@ -369,7 +367,7 @@ async function recallTask(contract, job_id, assigned_to) {
     
     const response = await callFunction(contract, contract, "recall_task", { "job_id": String(job_id), "assigned_to": String(assigned_to) }, undefined)
 
-    if(!response || String(response).toLowerCase().includes("error")){
+    if(response === false || String(response).toLowerCase().includes("error")){
         output.status = 1
         output.output = response
         return output
