@@ -110,7 +110,8 @@ class JobPosting {
       return "error: not enough storage available";
     }
 
-    const reward_amount: bigint = BigInt(this.funds) / BigInt(ids.length);
+    const reward_amount: bigint =
+      BigInt(this.funds) / BigInt(descriptions.length);
 
     if (reward_amount < MIN_REWARD) {
       this.send_near(caller, BigInt(this.funds));
@@ -131,7 +132,7 @@ class JobPosting {
 
     this.funds = (
       BigInt(this.funds) -
-      reward_amount * BigInt(ids.length)
+      reward_amount * BigInt(descriptions.length)
     ).toString();
 
     return "success: jobs added to available jobs list";
@@ -211,16 +212,20 @@ class JobPosting {
     const job = this.in_progress_jobs.find((job) => job.id === job_id);
     near.log(job);
 
-    if (BigInt(job.expires) < near.blockTimestamp()) {
-      return "error: job is not expired";
-    }
-
     this.in_progress_jobs = this.in_progress_jobs.filter(
       (ip_job) => ip_job != job
     );
     const to_recall = job.tasks.find(
       (task) => task.assigned_to === assigned_to
     );
+
+    if (
+      BigInt(to_recall.time_assigned) <
+      near.blockTimestamp() + NANOSECONDS_PER_HOUR
+    ) {
+      return "error: task is not expired";
+    }
+
     job.tasks = job.tasks.filter((task) => task != to_recall);
     near.log(job);
     this.available_jobs.push(job);
