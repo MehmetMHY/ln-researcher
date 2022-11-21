@@ -6,6 +6,7 @@ const os = require("os")
 const path = require("path")
 const nearAPI = require("near-api-js");
 const { connect, KeyPair, keyStores, utils, providers } = nearAPI
+const util = require("../../utils/util")
 
 const logger = require("../../utils/logger")
 const request = require("../../utils/request")
@@ -18,6 +19,7 @@ const myKeyStore = new nearAPI.keyStores.UnencryptedFileSystemKeyStore(credentia
 const connectionConfig = Object.assign({keyStore: myKeyStore}, config.connectionConfig)
 
 const nameForLog = `[nearApi]`
+const addJobSchema = require("../../models/scAddJob")
 
 // get account balance for a stated NEAR account
 async function getAccountBalance(accountName){
@@ -195,8 +197,14 @@ async function getAvailableFunds(contract) {
 
 async function addJobs(contract, jobs) {
     const output = { status: 0, output: undefined }
+    const validJobs = await util.schemaValidate(addJobSchema.scAddJob, jobs)
+    if(!validJobs){
+        logger.error(`${nameForLog} Failed to add job ${JSON.stringify(jobs)} to contract ${contract} due to inputted jobs not being a valid format`)
+        output.status = 1
+        return output
+    }
 
-    const response = await callFunction(contract, contract, "add_jobs", { "ids": jobs }, undefined)
+    const response = await callFunction(contract, contract, "add_jobs", { "descriptions": jobs }, undefined)
 
     if(response === false || String(response).toLowerCase().includes("error")){
         output.status = 1

@@ -27,10 +27,10 @@
             "explorerUrl": "https://explorer.testnet.near.org"
         },
         "mainAccount": "memetime.testnet",
-        "scAccount": "dev-1668920651111-84606440529857",
+        "scAccount": "dev-1669005331131-34888993730110",
         "maxJobsPerRound": 10
     },
-    
+
     "dataDirPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/",
     "whatToLabel": ["maize"],
     "labelDescriptionPath": "/Users/mehmet/Desktop/NEAR-DEV/content/img_data/plants_5-18-2019/corn_plants/description.txt",

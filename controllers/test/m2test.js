@@ -7,7 +7,7 @@ const fs = require("fs")
 const scTestData = require("./mkeys.json")
 
 async function main(){
-    const id = "f371783c-ac05-4efb-96db-104006933d58"
+    const id = "4615dfd3-98c6-40b3-971f-073449f05faa"
     const username = "memetime.testnet"
 
     const url = "http://localhost:3000/image/"
