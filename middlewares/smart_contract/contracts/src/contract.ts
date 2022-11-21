@@ -210,11 +210,6 @@ class JobPosting {
     assigned_to: string;
   }): string | undefined {
     const job = this.in_progress_jobs.find((job) => job.id === job_id);
-    near.log(job);
-
-    this.in_progress_jobs = this.in_progress_jobs.filter(
-      (ip_job) => ip_job != job
-    );
     const to_recall = job.tasks.find(
       (task) => task.assigned_to === assigned_to
     );
@@ -225,6 +220,10 @@ class JobPosting {
     ) {
       return "error: task is not expired";
     }
+
+    this.in_progress_jobs = this.in_progress_jobs.filter(
+      (ip_job) => ip_job != job
+    );
 
     job.tasks = job.tasks.filter((task) => task != to_recall);
     near.log(job);
