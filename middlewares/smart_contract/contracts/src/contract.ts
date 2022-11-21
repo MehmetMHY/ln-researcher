@@ -10,6 +10,7 @@ interface Job {
   id: string;
   reward: string;
   expires: string;
+  label_keys: string[];
   tasks: Task[];
   final_ranking?: string[];
 }
@@ -26,6 +27,11 @@ interface Task {
   time_assigned: string;
   time_submitted?: string;
   data?: any;
+}
+
+interface JobDescription {
+  id: string;
+  label_keys: string[];
 }
 
 const NANOSECONDS_PER_HOUR = BigInt(3600000000000);
@@ -96,7 +102,7 @@ class JobPosting {
    * @returns {string}                result message (error or success)
    */
   @call({ privateFunction: true })
-  add_jobs({ ids }: { ids: string[] }): string {
+  add_jobs({ descriptions }: { descriptions: JobDescription[] }): string {
     const caller = near.predecessorAccountId();
 
     if (near.storageUsage() >= STORAGE_LIMIT) {
@@ -113,11 +119,12 @@ class JobPosting {
 
     const expires = near.blockTimestamp() + TIME_LIMIT;
 
-    ids.map((id) => {
+    descriptions.map(({ id, label_keys }) => {
       this.available_jobs.push({
         id: id,
         reward: `${reward_amount}`,
         expires: `${expires}`,
+        label_keys: label_keys,
         tasks: [],
       });
     });
