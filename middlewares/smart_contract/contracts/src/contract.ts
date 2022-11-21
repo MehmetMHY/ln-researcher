@@ -220,8 +220,8 @@ class JobPosting {
     );
 
     if (
-      BigInt(to_recall.time_assigned) <
-      near.blockTimestamp() + NANOSECONDS_PER_HOUR
+      near.blockTimestamp() - BigInt(to_recall.time_assigned) <
+      NANOSECONDS_PER_HOUR
     ) {
       return "error: task is not expired";
     }
@@ -245,7 +245,7 @@ class JobPosting {
     rsa_pk,
   }: {
     rsa_pk: string;
-  }): { url: string; id: string; task: Task } | string {
+  }): { url: string; id: string; label_keys: string[]; task: Task } | string {
     if (!rsa_pk) {
       return "error: must provide rsa public key";
     }
@@ -299,7 +299,12 @@ class JobPosting {
 
     job.tasks.push(task);
     this.in_progress_jobs.push(job);
-    return { url: this.url, id: job.id, task: task };
+    return {
+      url: this.url,
+      id: job.id,
+      label_keys: job.label_keys,
+      task: task,
+    };
   }
 
   @call({})
