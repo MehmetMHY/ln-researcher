@@ -422,5 +422,3 @@ module.exports = {
     recallTask,
     clearCompleted
 }
-
-clearCompleted(config.scAccount).then(result=>console.log(JSON.stringify(result,null,indent=4)))
