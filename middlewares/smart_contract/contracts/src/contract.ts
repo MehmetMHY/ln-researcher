@@ -220,7 +220,7 @@ class JobPosting {
     );
 
     if (
-      near.blockTimestamp() - BigInt(to_recall.time_assigned) >
+      near.blockTimestamp() - BigInt(to_recall.time_assigned) <
       NANOSECONDS_PER_HOUR
     ) {
       return "error: task is not expired";
