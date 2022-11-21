@@ -65,7 +65,7 @@ async function addAllToDB(){
                 logger.info(`File ${fullPath} already exists in the db so a new instance of it was not added`)
                 stats.exists.push(fullPath)
             } else {
-                logger.error(`Failed to add file the following file to the database: ${fullPath}`)
+                logger.warning(`Failed to add file the following file to the database: ${fullPath}`)
                 stats.fails.push(fullPath)
             }
         }
