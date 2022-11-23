@@ -60,8 +60,9 @@ async function taskRequest() {
 ///// RANDOMS:
 // smartContract.recallTask(scAccount, "4615dfd3-98c6-40b3-971f-073449f05faa", mainAccount).then()
 
-// printDB().then()
+printDB().then()
 
-fundAdd().then()
+// fundAdd().then()
 // jobsAdd().then()
 // taskRequest().then()
+
