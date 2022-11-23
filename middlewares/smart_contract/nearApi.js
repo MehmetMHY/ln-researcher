@@ -245,15 +245,12 @@ async function getStatus(contract, type) {
     return response
 }
 
-async function setURL(contract, urlRoot, endpoint=undefined) {
+async function setURL(contract, urlRoot, endpoint="") {
     const output = { status: 0, output: undefined }
-
+    
     let url = String(urlRoot)
-    if(endpoint){
-        url = path.join(url, String(endpoint))
-    }
 
-    const urlStatus = await request.get(String(url))
+    const urlStatus = await request.get(String(path.join(url, String(endpoint))))
 
     if(urlStatus.status === 1){
         output.status = 1
