@@ -8,7 +8,7 @@ const scTestData = require("./mkeys.json")
 const config = require("../../config/config.json")
 
 async function main(){
-    const id = "4615dfd3-98c6-40b3-971f-073449f05faa"
+    const id = "a065cd2f-ea73-461d-b0d4-a774a5d157c5"
     const username = config.smartContract.mainAccount
 
     const url = "http://localhost:3000/image/"

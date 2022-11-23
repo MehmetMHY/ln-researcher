@@ -2,6 +2,10 @@ const moment = require("moment")
 const util = require("../../utils/util")
 const db = require("../database/db")
 const logger = require("../../utils/logger")
+const manager = require("../db_manager/tools")
+const smartContract = require("../smart_contract/nearApi")
+const config = require("../../config/config.json")
+const nearAPI = require("near-api-js");
 
 const nameForLog = `[currentState]`
 
@@ -88,7 +92,41 @@ async function displayState(){
         }
     
         console.log(`⌛ Average Complete Time: ${avgCompletedTime} millisecond(s)`)
-    
+
+        const scState = await manager.scGetAllData()
+        if(scState.complete){
+            console.log("📝 Smart Contract Bassic State:")
+            console.log("   👉 Current Jobs & Their States: ")
+            console.log(`       😊 Completed Jobs: ${scState.types.completed.length}`)
+            console.log(`       😐 In_Progress Jobs: ${scState.types.in_progress.length}`)
+            console.log(`       😔 Available Jobs: ${scState.types.available.length}`)
+            console.log(`       🟡 Total Jobs: ${scState.all.length}`)
+
+            const currentSetURL = await smartContract.getURL(config.smartContract.scAccount)
+            const currentRequestFee = await smartContract.viewFunction(config.smartContract.mainAccount, config.smartContract.scAccount, "get_request_fee", {})
+
+            if(currentRequestFee || currentSetURL){
+                console.log(`   👉 Other Variables:`)
+            }
+
+            if(currentSetURL){
+                console.log(`       🌐 Data Web API's URL: ${currentSetURL}`)
+            } else {
+                fullyPrinted = false
+                logger.error(`${nameForLog} Failed to get current set URL from smart contract: ${JSON.stringify(currentSetURL)}`)
+            }
+
+            if(currentRequestFee){
+                console.log(`       🎫 Current Request Fee: Ⓝ ${nearAPI.utils.format.formatNearAmount(currentRequestFee)}`)
+            } else {
+                fullyPrinted = false
+                logger.error(`${nameForLog} Failed to get current request fee from smart contract: ${JSON.stringify(currentRequestFee)}`)
+            }
+
+        }else{
+            fullyPrinted = false
+        }
+
         if(!fullyPrinted){
             console.log("🛑 ERROR OCCURRED SO KEY INFORMATION(S) ARE MISSING; CHECK THE LOG(S)!")
             logger.error(`${nameForLog} Failed to fully display all the current information because some errors occurred`)
