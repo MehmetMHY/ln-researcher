@@ -52,3 +52,14 @@ https://stackoverflow.com/questions/28834835/readfile-in-base64-nodejs
 https://nodejs.dev/en/learn/reading-files-with-nodejs/
 https://melvingeorge.me/blog/convert-string-buffer-nodejs
 https://stackoverflow.com/questions/8750780/encrypting-data-with-a-public-key-in-node-js
+https://nodejs.org/en/docs/guides/nodejs-docker-webapp/
+https://github.com/nodesource/distributions/blob/master/README.md
+https://stackoverflow.com/questions/30171063/how-to-generate-a-postgresql-dump-from-a-docker-container
+https://stackoverflow.com/questions/24930923/postgresql-where-does-the-output-of-pg-dump-go
+https://www.postgresql.org/docs/8.4/app-pgdump.html
+https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-20-04
+https://stackoverflow.com/questions/18223665/postgresql-query-from-bash-script-as-database-user-postgres
+https://stackoverflow.com/questions/60619659/postgres-mounting-volume-in-docker-permission-denied
+https://stackoverflow.com/questions/46891622/run-yarn-in-a-different-path
+https://stackoverflow.com/questions/41588857/docker-postgres-failed-to-start-with-specified-port
+
