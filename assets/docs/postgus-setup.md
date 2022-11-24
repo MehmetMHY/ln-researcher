@@ -19,7 +19,7 @@
 docker pull postgres
 
 # install, setup, and run postgres docker container:
-docker run --name ln-researcher-db -e POSTGRES_PASSWORD=password -d -p 5432:5432 
+docker run --name ln-researcher-db -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres
 
 # list all running docker container (grab the CONTAINER ID):
 docker ps
