@@ -6,7 +6,7 @@ const logger =require("../../utils/logger")
 
 const nameForLog = `[cli_backupDB]`
 
-async function main(){
+async function dbBackupToFile(){
     let args = (process.argv)
 
     if(args.length <= 2){
@@ -34,6 +34,20 @@ async function main(){
     return 0
 }
 
-// MAIN FUNCTION CALLS
-main().then(result=>console.log(JSON.stringify(result)))
+async function dbPrintAll(){
+    try {
+        const database = await db.getImageData()
+        const data = JSON.stringify(database, null, indent=4)
+        console.log(data)
+    } catch(e) {
+        console.log(`error : ${e}`)
+    }
+
+    return
+}
+
+module.exports = {
+    dbBackupToFile,
+    dbPrintAll
+}
 

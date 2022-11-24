@@ -11,7 +11,8 @@
     "ls": "node -e \"console.table(Object.keys(require('./package.json').scripts))\"",
     "scGenTestData": "node -e \"require('./middlewares/smart_contract/test/index.js').genTestData([5,5],[3584,2240],[0.03, 0.06],[1, 4],[2, 5]).then(result=>console.log('Created smart contract test data/json at:', result.metadata.filepath))\"",
     "devRunAPI": "export PORT=3000 ; nodemon ./app.js",
-    "devRunManager": "node ./manager.js"
+    "devRunManager": "node ./manager.js",
+    "printLocalDB": "node -e \"require('./middlewares/cli/backupDB').dbPrintAll()\""
   },
   "repository": {
     "type": "git",
