@@ -4,7 +4,7 @@
 </p>
 
 ## ⚠️ WARNING:
-- (11-21-2022) This code is not finished and has a long ways to go. Many componets are completed but not all functionality has been implmented and/or thorough tested. Use this code at your on risk.
+(12-29-2022) This project is not fully completed and still needs thorough testing before going live
 
 ## What is the Labeler NearBy project?
 - Labeler NearBy (ln) is a decentralized platform where machine learning researchers can outsource data labeling to labelers around the world. This is done by using ln-researcher, ln-labeler, and NEAR smart contract(s).
