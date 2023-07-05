@@ -1,14 +1,14 @@
 # Labeler NearBy
+- Hackathon: [NEAR MetaBUILD III](https://metabuild.devpost.com/)
 - Official Submission: https://devpost.com/software/labeler-nearby
 - Submission Date: November 2023
+- Authors:
+  - Mehmet Yilmaz
+  - Dylan Eck
 
 ## Description
 
 A decentralized platform where machine learning researchers  can outsource data labeling to labelers around the world.
-
-## Authors:
-- Mehmet Yilmaz
-- Dylan Eck
 
 <p align="center">
   <a href="https://www.youtube.com/watch?v=KfaUDbWIvr8" title="Submission Video">
@@ -16,9 +16,6 @@ A decentralized platform where machine learning researchers  can outsource data 
   </a>
 </p>
 <p align="center"><em><strong>click the image to view the submission video (YouTube)</strong></em></p>
-
-
-**⚠️ Note: Due to the small size of our team, we were not able to implement everything that we wanted to. Some things described in this write up are still a work in progress and as such may not be fully present in the code submitted**
 
 <p><em><strong>
 ⚠️ Note: Due to the small size of our team, we were not able to implement everything that we wanted to. Some things described in this write up are still a work in progress and as such may not be fully present in the code submitted
